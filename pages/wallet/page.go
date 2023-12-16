@@ -239,43 +239,52 @@ func (p *Page) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions 
 			p.header.HandleKeyGoBack(gtx)
 			p.header.HandleSwipeRightGoBack(gtx)
 
-			return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					return node_status_bar.Instance.Layout(gtx, th)
-				}),
-				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					r := op.Record(gtx.Ops)
-					dims := layout.Inset{
-						Left: unit.Dp(30), Right: unit.Dp(30),
-						Top: unit.Dp(30), Bottom: unit.Dp(20),
-					}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-						return p.header.Layout(gtx, th, func(gtx layout.Context, th *material.Theme, title string) layout.Dimensions {
-							lbl := material.Label(th, unit.Sp(22), title)
-							lbl.Font.Weight = font.Bold
-							return lbl.Layout(gtx)
-						})
-					})
-					c := r.Stop()
+			return layout.Flex{Axis: layout.Vertical}.
+				Layout(
+					gtx,
+					layout.Rigid(
+						func(gtx layout.Context) layout.Dimensions {
+							return node_status_bar.Instance.Layout(gtx, th)
+						}),
+					layout.Rigid(
+						func(gtx layout.Context) layout.Dimensions {
+							r := op.Record(gtx.Ops)
+							dims := layout.Inset{
+								Left: unit.Dp(30), Right: unit.Dp(30),
+								Top: unit.Dp(30), Bottom: unit.Dp(20),
+							}.Layout(
+								gtx,
+								func(gtx layout.Context) layout.Dimensions {
+									return p.header.Layout(
+										gtx,
+										th,
+										func(gtx layout.Context, th *material.Theme, title string) layout.Dimensions {
+											lbl := material.Label(th, unit.Sp(22), title)
+											lbl.Font.Weight = font.Bold
+											return lbl.Layout(gtx)
+										})
+								})
+							c := r.Stop()
 
-					paint.FillShape(gtx.Ops, theme.Current.HeaderTopBgColor, clip.RRect{
-						Rect: image.Rectangle{Max: dims.Size},
-						NW:   gtx.Dp(15),
-						NE:   gtx.Dp(15),
-						SE:   gtx.Dp(0),
-						SW:   gtx.Dp(0),
-					}.Op(gtx.Ops))
+							paint.FillShape(gtx.Ops, theme.Current.HeaderTopBgColor, clip.RRect{
+								Rect: image.Rectangle{Max: dims.Size},
+								NW:   gtx.Dp(15),
+								NE:   gtx.Dp(15),
+								SE:   gtx.Dp(0),
+								SW:   gtx.Dp(0),
+							}.Op(gtx.Ops))
 
-					c.Add(gtx.Ops)
-					return dims
-				}),
-				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-					startColor := theme.Current.BgGradientStartColor
-					endColor := theme.Current.BgGradientEndColor
-					defer utils.PaintLinearGradient(gtx, startColor, endColor).Pop()
+							c.Add(gtx.Ops)
+							return dims
+						}),
+					layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+						startColor := theme.Current.BgGradientStartColor
+						endColor := theme.Current.BgGradientEndColor
+						defer utils.PaintLinearGradient(gtx, startColor, endColor).Pop()
 
-					return p.pageRouter.Layout(gtx, th)
-				}),
-			)
+						return p.pageRouter.Layout(gtx, th)
+					}),
+				)
 		}),
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			return bottom_bar.Instance.Layout(gtx, th)

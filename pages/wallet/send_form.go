@@ -65,125 +65,75 @@ var _ router.Page = &PageSendForm{}
 
 func NewPageSendForm() *PageSendForm {
 
-	buildIcon, _ := widget.
-		NewIcon(icons.HardwareMemory)
+	buildIcon, _ := widget.NewIcon(icons.HardwareMemory)
 
-	loadingIcon, _ := widget.
-		NewIcon(icons.NavigationRefresh)
+	loadingIcon, _ := widget.NewIcon(icons.NavigationRefresh)
 
-	buttonBuildTx := components.
-		NewButton(components.ButtonStyle{
+	buttonBuildTx := components.NewButton(components.ButtonStyle{
+		Icon:        buildIcon,
+		LoadingIcon: loadingIcon,
+		TextSize:    unit.Sp(14),
+		IconGap:     unit.Dp(10),
+		Rounded:     components.UniformRounded(unit.Dp(5)),
+		Inset:       layout.UniformInset(unit.Dp(10)),
+		Animation:   components.NewButtonAnimationDefault(),
+	})
 
-			Icon:        buildIcon,
-			LoadingIcon: loadingIcon,
+	buttonBuildTx.Label.Alignment = text.Middle
 
-			TextSize: unit.Sp(14),
+	buttonBuildTx.Style.Font.Weight = font.Bold
 
-			IconGap: unit.Dp(10),
+	txtAmount := prefabs.NewNumberTextField()
 
-			Rounded: components.
-				UniformRounded(unit.Dp(5)),
+	txtAmount.Input.TextSize = unit.Sp(17)
 
-			Inset: layout.
-				UniformInset(unit.Dp(10)),
+	txtAmount.Input.FontWeight = font.Bold
 
-			Animation: components.
-				NewButtonAnimationDefault(),
-		})
+	animationEnter := animation.NewAnimation(
+		false,
+		gween.NewSequence(
+			gween.New(1, 0, .25, ease.Linear)))
 
-	buttonBuildTx.
-		Label.
-		Alignment = text.Middle
-
-	buttonBuildTx.
-		Style.
-		Font.
-		Weight = font.Bold
-
-	txtAmount := prefabs.
-		NewNumberTextField()
-
-	txtAmount.
-		Input.
-		TextSize = unit.Sp(17)
-
-	txtAmount.
-		Input.
-		FontWeight = font.Bold
-
-	animationEnter := animation.
-		NewAnimation(false,
-			gween.
-				NewSequence(
-					gween.
-						New(1, 0, .25, ease.Linear)))
-
-	animationLeave := animation.
-		NewAnimation(false,
-			gween.
-				NewSequence(
-					gween.
-						New(0, 1, .25, ease.Linear)))
+	animationLeave := animation.NewAnimation(
+		false,
+		gween.NewSequence(
+			gween.New(0, 1, .25, ease.Linear)))
 
 	list := new(widget.List)
 
 	list.Axis = layout.Vertical
 
-	defaultRingSize := settings.
-		App.SendRingSize
+	defaultRingSize := settings.App.SendRingSize
 
-	ringSizeSelector := prefabs.
-		NewRingSizeSelector(defaultRingSize)
+	ringSizeSelector := prefabs.NewRingSizeSelector(defaultRingSize)
 
-	optionIcon, _ := widget.
-		NewIcon(icons.ActionSettingsEthernet)
+	optionIcon, _ := widget.NewIcon(icons.ActionSettingsEthernet)
 
-	buttonOptions := components.
-		NewButton(components.
-			ButtonStyle{
-
-			Rounded: components.
-				UniformRounded(unit.Dp(5)),
-
-			TextSize: unit.Sp(14),
-
-			Icon: optionIcon,
-
-			IconGap: unit.Dp(10),
-
-			Inset: layout.
-				UniformInset(unit.Dp(10)),
-
-			Animation: components.
-				NewButtonAnimationDefault(),
-
+	buttonOptions := components.NewButton(
+		components.ButtonStyle{
+			Rounded:   components.UniformRounded(unit.Dp(5)),
+			TextSize:  unit.Sp(14),
+			Icon:      optionIcon,
+			IconGap:   unit.Dp(10),
+			Inset:     layout.UniformInset(unit.Dp(10)),
+			Animation: components.NewButtonAnimationDefault(),
 			Border: widget.Border{
-
 				Color:        color.NRGBA{R: 0, G: 0, B: 0, A: 255},
 				Width:        unit.Dp(2),
 				CornerRadius: unit.Dp(5),
 			},
 		})
 
-	buttonOptions.
-		Label.
-		Alignment = text.Middle
+	buttonOptions.Label.Alignment = text.Middle
 
-	buttonOptions.
-		Style.
-		Font.
-		Weight = font.Bold
+	buttonOptions.Style.Font.Weight = font.Bold
 
-	buttonSetMax := components.
-		NewButton(components.
-			ButtonStyle{
+	buttonSetMax := components.NewButton(
+		components.ButtonStyle{
 			TextSize: unit.Sp(16),
 		})
 
-	buttonSetMax.
-		Style.
-		Font.
-		Weight = font.Bold
+	buttonSetMax.Style.Font.Weight = font.Bold
 
 	balanceContainer := NewBalanceContainer()
 
@@ -210,227 +160,145 @@ func (p *PageSendForm) IsActive() bool {
 func (p *PageSendForm) Enter() {
 	p.isActive = true
 
-	if !page_instance.
-		header.
-		IsHistory(PAGE_SEND_FORM) {
-
-		p.animationEnter.
-			Start()
-
-		p.animationLeave.
-			Reset()
+	if !page_instance.header.IsHistory(PAGE_SEND_FORM) {
+		p.animationEnter.Start()
+		p.animationLeave.Reset()
 	}
 
-	page_instance.
-		pageBalanceTokens.
-		ResetWalletHeader()
+	page_instance.pageBalanceTokens.ResetWalletHeader()
 }
 
 func (p *PageSendForm) Leave() {
-	p.animationLeave.
-		Start()
-
-	p.animationEnter.
-		Reset()
+	p.animationLeave.Start()
+	p.animationEnter.Reset()
 }
 
 func (p *PageSendForm) SetToken(token *wallet_manager.Token) {
-
 	p.token = token
-
-	p.balanceContainer.
-		SetToken(p.token)
+	p.balanceContainer.SetToken(p.token)
 }
 
 func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	{
-		state := p.animationEnter.
-			Update(gtx)
+		state := p.animationEnter.Update(gtx)
 
-		if state.
-			Active {
+		if state.Active {
 			defer animation.
 				TransformX(gtx, state.Value).
-				Push(gtx.Ops).Pop()
+				Push(gtx.Ops).
+				Pop()
 		}
 	}
 
 	{
-		state := p.animationLeave.
-			Update(gtx)
+		state := p.animationLeave.Update(gtx)
 
-		if state.
-			Active {
+		if state.Active {
 			defer animation.
 				TransformX(gtx, state.Value).
-				Push(gtx.Ops).Pop()
+				Push(gtx.Ops).
+				Pop()
 		}
 
-		if state.
-			Finished {
+		if state.Finished {
 			p.isActive = false
 			op.InvalidateOp{}.
 				Add(gtx.Ops)
 		}
 	}
 
-	if p.
-		buttonBuildTx.
-		Clicked() {
+	if p.buttonBuildTx.Clicked() {
 		go func() {
-			p.buttonBuildTx.
-				SetLoading(true)
-
+			p.buttonBuildTx.SetLoading(true)
 			err := p.prepareTx()
-
-			p.buttonBuildTx.
-				SetLoading(false)
+			p.buttonBuildTx.SetLoading(false)
 
 			if err != nil {
+				notification_modals.ErrorInstance.SetText(
+					lang.Translate("Error"),
+					err.Error())
 
-				notification_modals.
-					ErrorInstance.
-					SetText(lang.
-						Translate("Error"),
-						err.Error())
-
-				notification_modals.
-					ErrorInstance.
-					SetVisible(true,
-						notification_modals.
-							CLOSE_AFTER_DEFAULT)
+				notification_modals.ErrorInstance.SetVisible(
+					true,
+					notification_modals.CLOSE_AFTER_DEFAULT)
 			}
 		}()
 	}
 
-	if p.buttonOptions.
-		Clicked() {
-
-		page_instance.
-			pageRouter.
-			SetCurrent(
-				PAGE_SEND_OPTIONS_FORM)
-
-		page_instance.
-			header.
-			AddHistory(
-				PAGE_SEND_OPTIONS_FORM)
+	if p.buttonOptions.Clicked() {
+		page_instance.pageRouter.SetCurrent(PAGE_SEND_OPTIONS_FORM)
+		page_instance.header.AddHistory(PAGE_SEND_OPTIONS_FORM)
 	}
 
-	if p.buttonSetMax.
-		Clicked() {
-
-		wallet := wallet_manager.
-			OpenedWallet
-
-		balance, _ := wallet.
-			Memory.
-			Get_Balance_scid(
-				p.token.
-					GetHash())
-
-		amount := utils.
-			ShiftNumber{
+	if p.buttonSetMax.Clicked() {
+		wallet := wallet_manager.OpenedWallet
+		balance, _ := wallet.Memory.Get_Balance_scid(p.token.GetHash())
+		amount := utils.ShiftNumber{
 			Number:   balance,
-			Decimals: int(p.token.Decimals)}.Format()
+			Decimals: int(p.token.Decimals)}.
+			Format()
 
-		p.txtAmount.
-			SetValue(amount)
+		p.txtAmount.SetValue(amount)
 	}
 
-	if build_tx_modal.
-		Instance.
-		TxSent() {
-
+	if build_tx_modal.Instance.TxSent() {
 		p.ClearForm()
 	}
 
 	{
-		if p.ringSizeSelector.
-			Changed {
-			settings.
-				App.
-				SendRingSize = p.ringSizeSelector.Size
-
-			settings.
-				Save()
+		if p.ringSizeSelector.Changed {
+			settings.App.SendRingSize = p.ringSizeSelector.Size
+			settings.Save()
 		}
 	}
 
-	widgets := []layout.
-		Widget{
-		func(gtx layout.Context) layout.
-			Dimensions { // This is the balance
-			return p.
-				balanceContainer.
-				Layout(gtx, th)
+	widgets := []layout.Widget{
+		func(gtx layout.Context) layout.Dimensions { // This is the balance
+			return p.balanceContainer.Layout(gtx, th)
 		},
 
-		func(gtx layout.Context) layout.
-			Dimensions { // This is address
-
-			return layout.
-				Flex{Axis: layout.Vertical}.
+		func(gtx layout.Context) layout.Dimensions { // This is address
+			return layout.Flex{Axis: layout.Vertical}.
 				Layout(gtx, layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
 						return p.walletAddrInput.
 							Layout(gtx, th)
 					}),
-
 					layout.Rigid(
-						layout.
-							Spacer{Height: unit.Dp(5)}.Layout),
+						layout.Spacer{ // this is a spacer
+							Height: unit.Dp(5)}.Layout),
 				)
 		},
 		func(gtx layout.Context) layout.Dimensions { // This is amount
-			return layout.
-				Flex{Axis: layout.Vertical}.
-				Layout(gtx,
-					layout.Rigid(
-						func(gtx layout.Context) layout.Dimensions {
-							v := utils.
-								ShiftNumber{
-								Number:   0,
-								Decimals: int(p.token.Decimals)}
+			return layout.Flex{Axis: layout.Vertical}.
+				Layout(gtx, layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						v := utils.ShiftNumber{
+							Number:   0,
+							Decimals: int(p.token.Decimals)}
 
-							return p.
-								txtAmount.
-								Layout(
-									gtx,
-									th,
-									lang.
-										Translate("Amount"),
-									v.
-										Format())
-						}),
+						return p.txtAmount.Layout(
+							gtx,
+							th,
+							lang.Translate("Amount"),
+							v.Format())
+					}),
 
 					layout.Rigid(
-						layout.
-							Spacer{
+						layout.Spacer{
 							Height: unit.Dp(5)}.Layout),
 
 					layout.Rigid(
 						func(gtx layout.Context) layout.Dimensions {
-							return layout.Flex{
-								Axis: layout.Horizontal}.
+							return layout.Flex{Axis: layout.Horizontal}.
 								Layout(
 									gtx,
-
 									layout.Flexed(1, layout.Spacer{}.Layout),
-
 									layout.Rigid(
 										func(gtx layout.Context) layout.Dimensions {
-
-											p.buttonSetMax.Text = lang.
-												Translate("SET MAX")
-
-											p.buttonSetMax.Style.Colors = theme.
-												Current.
-												ModalButtonColors
-
-											return p.
-												buttonSetMax.
-												Layout(gtx, th)
+											p.buttonSetMax.Text = lang.Translate("SET MAX")
+											p.buttonSetMax.Style.Colors = theme.Current.ModalButtonColors
+											return p.buttonSetMax.Layout(gtx, th)
 										}),
 								)
 						}),
@@ -438,78 +306,52 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is ringsize
-			return p.
-				ringSizeSelector.
-				Layout(gtx, th)
+			return p.ringSizeSelector.Layout(gtx, th)
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is options
-			p.buttonOptions.Text = lang.
-				Translate("ADD TX MESSAGE & DST PORT")
-
-			p.buttonOptions.Style.Colors = theme.
-				Current.
-				ButtonSecondaryColors
-
-			return p.
-				buttonOptions.
-				Layout(gtx, th)
+			p.buttonOptions.Text = lang.Translate("ADD TX MESSAGE & DST PORT")
+			p.buttonOptions.Style.Colors = theme.Current.ButtonSecondaryColors
+			return p.buttonOptions.Layout(gtx, th)
 
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is the build
-			p.buttonBuildTx.Text = lang.
-				Translate("SEND TRANSACTION")
-
-			p.buttonBuildTx.Style.Colors = theme.
-				Current.
-				ButtonPrimaryColors
-
-			return p.
-				buttonBuildTx.
-				Layout(gtx, th)
+			p.buttonBuildTx.Text = lang.Translate("SEND TRANSACTION")
+			p.buttonBuildTx.Style.Colors = theme.Current.ButtonPrimaryColors
+			return p.buttonBuildTx.Layout(gtx, th)
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is a spacer
-			return layout.
-				Spacer{Height: unit.Dp(30)}.Layout(gtx)
+			return layout.Spacer{Height: unit.Dp(30)}.Layout(gtx)
 		},
 	}
 
-	listStyle := material.
-		List(th, p.list)
+	listStyle := material.List(th, p.list)
 
-	listStyle.AnchorStrategy = material.
-		Overlay
+	listStyle.AnchorStrategy = material.Overlay
 
-	if p.walletAddrInput.
-		txtWalletAddr.
-		Clickable.
-		Clicked() {
+	if p.walletAddrInput.txtWalletAddr.Clickable.Clicked() {
 		p.list.
 			ScrollTo(1)
-
 	}
 
-	if p.txtAmount.
-		Input.
-		Clickable.
-		Clicked() {
-
+	if p.txtAmount.Input.Clickable.Clicked() {
 		p.list.
 			ScrollTo(2)
 	}
 
-	return listStyle.
-		Layout(gtx, len(widgets),
-			func(gtx layout.Context, index int) layout.Dimensions {
-				return layout.Inset{
-					Top:    unit.Dp(0),
-					Bottom: unit.Dp(20),
-					Left:   unit.Dp(30),
-					Right:  unit.Dp(30),
-				}.Layout(gtx, widgets[index])
-			})
+	return listStyle.Layout(
+		gtx,
+		len(widgets),
+		func(gtx layout.Context, index int) layout.Dimensions {
+			return layout.Inset{
+				Top:    unit.Dp(0),
+				Bottom: unit.Dp(20),
+				Left:   unit.Dp(30),
+				Right:  unit.Dp(30),
+			}.Layout(gtx, widgets[index])
+		})
 }
 
 func (p *PageSendForm) ClearForm() {
