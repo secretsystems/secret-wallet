@@ -143,6 +143,7 @@ func (w *CameraQRScanModal) scan() {
 	w.scanned = false
 	w.scanning = true
 	go func() {
+		time.Sleep(5 * time.Millisecond)
 		for imageResult := range camera.GetFeed() {
 			if imageResult.Err != nil {
 				w.err = imageResult.Err
