@@ -430,6 +430,17 @@ func (p *PageSendForm) prepareTx() error {
 			return err
 		}
 
+		if address.Arguments.Has(rpc.RPC_NEEDS_REPLYBACK_ADDRESS, rpc.DataUint64) {
+			arguments = append(
+				arguments, rpc.Argument{
+					Name:     rpc.RPC_REPLYBACK_ADDRESS,
+					DataType: rpc.DataAddress,
+					Value:    wallet.Memory.GetAddress(),
+				},
+			)
+
+		}
+
 		if address.Arguments.Has(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64) {
 			amount.Number = address.Arguments.Value(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64).(uint64)
 			arguments = append(
@@ -479,6 +490,11 @@ func (p *PageSendForm) prepareTx() error {
 					"The integrated address has expired.",
 				))
 			}
+		}
+		_, err = arguments.CheckPack(transaction.PAYLOAD0_LIMIT)
+
+		if err != nil {
+			return err
 		}
 
 	} else {
@@ -551,12 +567,9 @@ func (p *PageSendForm) prepareTx() error {
 
 	transfers := []rpc.Transfer{
 		{
-			SCID: scId,
-
+			SCID:        scId,
 			Destination: address.String(),
-
-			Amount: amount.Number,
-
+			Amount:      amount.Number,
 			Payload_RPC: arguments,
 		},
 	}
