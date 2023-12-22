@@ -202,8 +202,7 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 
 		if state.Finished {
 			p.isActive = false
-			op.InvalidateOp{}.
-				Add(gtx.Ops)
+			op.InvalidateOp{}.Add(gtx.Ops)
 		}
 	}
 
@@ -254,55 +253,68 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 
 	widgets := []layout.Widget{
 		func(gtx layout.Context) layout.Dimensions { // This is the balance
-			return p.balanceContainer.Layout(gtx, th)
+			return p.balanceContainer.
+				Layout(gtx, th)
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is address
-			return layout.Flex{Axis: layout.Vertical}.
-				Layout(gtx, layout.Rigid(
+			return layout.Flex{
+				Axis: layout.Vertical,
+			}.Layout(
+				gtx,
+				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
-						return p.walletAddrInput.
-							Layout(gtx, th)
-					}),
-					layout.Rigid(
-						layout.Spacer{ // this is a spacer
-							Height: unit.Dp(5)}.Layout),
-				)
+						return p.walletAddrInput.Layout(gtx, th)
+					},
+				),
+				layout.Rigid(
+					layout.Spacer{ // this is a spacer
+						Height: unit.Dp(5)}.Layout,
+				),
+			)
 		},
+
 		func(gtx layout.Context) layout.Dimensions { // This is amount
-			return layout.Flex{Axis: layout.Vertical}.
-				Layout(gtx, layout.Rigid(
+			return layout.Flex{
+				Axis: layout.Vertical,
+			}.Layout(
+				gtx,
+				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
 						v := utils.ShiftNumber{
 							Number:   0,
-							Decimals: int(p.token.Decimals)}
+							Decimals: int(p.token.Decimals),
+						}
 
 						return p.txtAmount.Layout(
 							gtx,
 							th,
 							lang.Translate("Amount"),
-							v.Format())
-					}),
+							v.Format(),
+						)
+					},
+				),
 
-					layout.Rigid(
-						layout.Spacer{
-							Height: unit.Dp(5)}.Layout),
+				layout.Rigid(layout.Spacer{Height: unit.Dp(5)}.Layout),
 
-					layout.Rigid(
-						func(gtx layout.Context) layout.Dimensions {
-							return layout.Flex{Axis: layout.Horizontal}.
-								Layout(
-									gtx,
-									layout.Flexed(1, layout.Spacer{}.Layout),
-									layout.Rigid(
-										func(gtx layout.Context) layout.Dimensions {
-											p.buttonSetMax.Text = lang.Translate("SET MAX")
-											p.buttonSetMax.Style.Colors = theme.Current.ModalButtonColors
-											return p.buttonSetMax.Layout(gtx, th)
-										}),
-								)
-						}),
-				)
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis: layout.Horizontal,
+						}.Layout(
+							gtx,
+							layout.Flexed(1, layout.Spacer{}.Layout),
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									p.buttonSetMax.Text = lang.Translate("SET MAX")
+									p.buttonSetMax.Style.Colors = theme.Current.ModalButtonColors
+									return p.buttonSetMax.Layout(gtx, th)
+								},
+							),
+						)
+					},
+				),
+			)
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is ringsize
@@ -323,7 +335,9 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 		},
 
 		func(gtx layout.Context) layout.Dimensions { // This is a spacer
-			return layout.Spacer{Height: unit.Dp(30)}.Layout(gtx)
+			return layout.Spacer{
+				Height: unit.Dp(30),
+			}.Layout(gtx)
 		},
 	}
 
@@ -332,13 +346,11 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 	listStyle.AnchorStrategy = material.Overlay
 
 	if p.walletAddrInput.txtWalletAddr.Clickable.Clicked() {
-		p.list.
-			ScrollTo(1)
+		p.list.ScrollTo(1)
 	}
 
 	if p.txtAmount.Input.Clickable.Clicked() {
-		p.list.
-			ScrollTo(2)
+		p.list.ScrollTo(2)
 	}
 
 	return listStyle.Layout(
@@ -350,185 +362,138 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 				Bottom: unit.Dp(20),
 				Left:   unit.Dp(30),
 				Right:  unit.Dp(30),
-			}.Layout(gtx, widgets[index])
-		})
+			}.Layout(
+				gtx,
+				widgets[index],
+			)
+		},
+	)
 }
 
 func (p *PageSendForm) ClearForm() {
-	txtAmount := p.
-		txtAmount
+	txtAmount := p.txtAmount
+	txtWalletAddr := p.walletAddrInput.txtWalletAddr
+	txtComment := page_instance.pageSendOptionsForm.txtComment
+	txtDstPort := page_instance.pageSendOptionsForm.txtDstPort
 
-	txtWalletAddr := p.
-		walletAddrInput.
-		txtWalletAddr
+	txtWalletAddr.SetValue("")
 
-	txtComment := page_instance.
-		pageSendOptionsForm.
-		txtComment
+	txtAmount.SetValue("")
 
-	txtDstPort := page_instance.
-		pageSendOptionsForm.
-		txtDstPort
+	txtComment.SetValue("")
 
-	txtWalletAddr.
-		SetValue("")
-
-	txtAmount.
-		SetValue("")
-
-	txtComment.
-		SetValue("")
-
-	txtDstPort.
-		SetValue("")
+	txtDstPort.SetValue("")
 
 	p.list.ScrollTo(0)
 }
 
 func (p *PageSendForm) prepareTx() error {
-	wallet := wallet_manager.
-		OpenedWallet
+	wallet := wallet_manager.OpenedWallet
 
 	txtAmount := p.txtAmount
 
-	if txtAmount.
-		Value() == "" {
-		return fmt.Errorf(
-			lang.
-				Translate(
-					"Amount cannot be empty."))
+	if txtAmount.Value() == "" {
+		return fmt.Errorf(lang.Translate(
+			"Amount cannot be empty.",
+		))
 	}
 
-	amount := &utils.
-		ShiftNumber{
-		Decimals: int(p.token.Decimals)}
+	amount := &utils.ShiftNumber{Decimals: int(p.token.Decimals)}
 
-	err := amount.
-		Parse(
-			txtAmount.
-				Value())
+	err := amount.Parse(txtAmount.Value())
 
 	if err != nil {
 		return err
 	}
 
-	if amount.
-		Number == 0 {
-		return fmt.Errorf(
-			lang.
-				Translate(
-					"Amount must be greater than 0."))
+	if amount.Number == 0 {
+		return fmt.Errorf(lang.Translate(
+			"Amount must be greater than 0.",
+		))
 	}
 
 	txtWalletAddr := p.walletAddrInput.txtWalletAddr
 
-	if txtWalletAddr.
-		Value() == "" {
-		return fmt.Errorf(
-			lang.
-				Translate(
-					"Destination address is empty."))
+	if txtWalletAddr.Value() == "" {
+		return fmt.Errorf(lang.Translate(
+			"Destination address is empty.",
+		))
 	}
 
-	txtComment := page_instance.
-		pageSendOptionsForm.
-		txtComment
+	txtComment := page_instance.pageSendOptionsForm.txtComment
 
-	txtDstPort := page_instance.
-		pageSendOptionsForm.
-		txtDstPort
+	txtDstPort := page_instance.pageSendOptionsForm.txtDstPort
 
 	var arguments rpc.Arguments
 
-	addrValue := txtWalletAddr.
-		Value()
+	addrValue := txtWalletAddr.Value()
 
-	address, err := rpc.
-		NewAddress(addrValue)
+	address, err := rpc.NewAddress(addrValue)
 
 	if err != nil {
-		addrString, err := wallet.Memory.
-			NameToAddress(addrValue)
+		addrString, err := wallet.Memory.NameToAddress(addrValue)
 
 		if err != nil {
-			if utils.
-				IsErrLeafNotFound(err) {
+			if utils.IsErrLeafNotFound(err) {
 				return fmt.Errorf("address not found for [%s]", addrValue)
 			}
 
 			return err
 		}
 
-		address, err = rpc.
-			NewAddress(addrString)
+		address, err = rpc.NewAddress(addrString)
 
 		if err != nil {
 			return err
 		}
 	}
 
-	if address.
-		IsIntegratedAddress() {
-		err = address.
-			Arguments.
-			Validate_Arguments()
+	if address.IsIntegratedAddress() {
+		err = address.Arguments.Validate_Arguments()
 
 		if err != nil {
 			return err
 		}
 
-		if !address.
-			Arguments.
-			Has(rpc.RPC_DESTINATION_PORT, rpc.DataUint64) {
+		if !address.Arguments.Has(rpc.RPC_DESTINATION_PORT, rpc.DataUint64) {
 
-			return fmt.Errorf(
-				lang.
-					Translate(
-						"The integrated address does not contain a destination port."))
+			return fmt.Errorf(lang.Translate(
+				"The integrated address does not contain a destination port.",
+			))
 		}
 
-		destinationPort := address.
-			Arguments.
-			Value(rpc.RPC_DESTINATION_PORT, rpc.DataUint64).(uint64)
+		destinationPort := address.Arguments.Value(rpc.RPC_DESTINATION_PORT, rpc.DataUint64).(uint64)
 
 		arguments = append(
 			arguments, rpc.Argument{
 				Name:     rpc.RPC_DESTINATION_PORT,
 				DataType: rpc.DataUint64,
-				Value:    destinationPort})
+				Value:    destinationPort,
+			},
+		)
 
-		if address.
-			Arguments.
-			Has(
-				rpc.RPC_COMMENT, rpc.DataString) {
+		if address.Arguments.Has(rpc.RPC_COMMENT, rpc.DataString) {
 
-			comment := address.
-				Arguments.
-				Value(rpc.RPC_COMMENT, rpc.DataString).(string)
+			comment := address.Arguments.Value(rpc.RPC_COMMENT, rpc.DataString).(string)
 
 			arguments = append(
 				arguments, rpc.Argument{
 					Name:     rpc.RPC_COMMENT,
 					DataType: rpc.DataString,
-					Value:    comment})
+					Value:    comment,
+				},
+			)
 		}
 
-		if address.
-			Arguments.
-			Has(
-				rpc.RPC_EXPIRY, rpc.DataTime) {
+		if address.Arguments.Has(rpc.RPC_EXPIRY, rpc.DataTime) {
 
-			expireTime := address.
-				Arguments.
-				Value(rpc.RPC_EXPIRY, rpc.DataTime).(time.Time)
+			expireTime := address.Arguments.Value(rpc.RPC_EXPIRY, rpc.DataTime).(time.Time)
 
-			if expireTime.
-				Before(time.Now().UTC()) {
+			if expireTime.Before(time.Now().UTC()) {
 
-				return fmt.Errorf(
-					lang.
-						Translate(
-							"The integrated address has expired."))
+				return fmt.Errorf(lang.Translate(
+					"The integrated address has expired.",
+				))
 			}
 		}
 
@@ -542,15 +507,15 @@ func (p *PageSendForm) prepareTx() error {
 				arguments, rpc.Argument{
 					Name:     rpc.RPC_COMMENT,
 					DataType: rpc.DataString,
-					Value:    comment})
+					Value:    comment,
+				},
+			)
 		}
 
-		destPortString := txtDstPort.
-			Value()
+		destPortString := txtDstPort.Value()
 
 		if len(destPortString) > 0 {
-			destPort, err := strconv.
-				ParseUint(destPortString, 10, 64)
+			destPort, err := strconv.ParseUint(destPortString, 10, 64)
 
 			if err != nil {
 				return err
@@ -560,36 +525,31 @@ func (p *PageSendForm) prepareTx() error {
 				arguments, rpc.Argument{
 					Name:     rpc.RPC_DESTINATION_PORT,
 					DataType: rpc.DataUint64,
-					Value:    destPort})
+					Value:    destPort,
+				},
+			)
 		}
 	}
 
-	_, err = arguments.CheckPack(
-		transaction.
-			PAYLOAD0_LIMIT)
+	_, err = arguments.CheckPack(transaction.PAYLOAD0_LIMIT)
 
 	if err != nil {
 		return err
 	}
 
-	scId := p.token.
-		GetHash()
+	scId := p.token.GetHash()
 
 	ringsize := uint64(p.ringSizeSelector.Size)
 
-	deroBalance, _ := wallet.Memory.
-		Get_Balance()
+	deroBalance, _ := wallet.Memory.Get_Balance()
 
-	transfers := []rpc.
-		Transfer{
+	transfers := []rpc.Transfer{
 		{
 			SCID: scId,
 
-			Destination: address.
-				String(),
+			Destination: address.String(),
 
-			Amount: amount.
-				Number,
+			Amount: amount.Number,
 
 			Payload_RPC: arguments,
 		},
@@ -600,59 +560,51 @@ func (p *PageSendForm) prepareTx() error {
 		// let's calculate fees before and deduct
 
 		transfers[0].Amount = 0 // set amount to 0 or transaction won't build because you don't have enough funds
-		_, txFees, _, err := wallet.
-			BuildTransaction(transfers, ringsize, nil, false)
+		_, txFees, _, err := wallet.BuildTransaction(
+			transfers,
+			ringsize,
+			nil,
+			false,
+		)
 
 		if err != nil {
 			return err
 		}
 
-		transfers[0].Amount = amount.
-			Number - txFees
+		transfers[0].Amount = amount.Number - txFees
 	}
 
-	build_tx_modal.
-		Instance.
-		Open(build_tx_modal.
-			TxPayload{
-			Transfers: transfers,
-			Ringsize:  ringsize,
-			TokensInfo: []*wallet_manager.
-				Token{p.token},
-		})
+	build_tx_modal.Instance.Open(
+		build_tx_modal.TxPayload{
+			Transfers:  transfers,
+			Ringsize:   ringsize,
+			TokensInfo: []*wallet_manager.Token{p.token},
+		},
+	)
 
 	return nil
 }
 
 type TokenContainer struct {
-	nameEditor *widget.
-			Editor
+	nameEditor *widget.Editor
 
-	scIdEditor *widget.
-			Editor
+	scIdEditor *widget.Editor
 
-	tokenImagerHover *prefabs.
-				ImageHoverClick
+	tokenImagerHover *prefabs.ImageHoverClick
 
-	token *wallet_manager.
-		Token
+	token *wallet_manager.Token
 }
 
 func NewTokenContainer() *TokenContainer {
 	nameEditor := new(widget.Editor)
-	nameEditor.
-		ReadOnly = true
-	nameEditor.
-		SingleLine = true
+	nameEditor.ReadOnly = true
+	nameEditor.SingleLine = true
 
 	scIdEditor := new(widget.Editor)
-	scIdEditor.
-		ReadOnly = true
-	scIdEditor.
-		SingleLine = true
+	scIdEditor.ReadOnly = true
+	scIdEditor.SingleLine = true
 
-	tokenImagerHover := prefabs.
-		NewImageHoverClick()
+	tokenImagerHover := prefabs.NewImageHoverClick()
 
 	return &TokenContainer{
 		scIdEditor:       scIdEditor,
@@ -662,25 +614,16 @@ func NewTokenContainer() *TokenContainer {
 }
 
 func (t *TokenContainer) SetToken(token *wallet_manager.Token) {
-	t.nameEditor.
-		SetText(token.Name)
+	t.nameEditor.SetText(token.Name)
 
-	scId := utils.
-		ReduceTxId(token.SCID)
+	scId := utils.ReduceTxId(token.SCID)
 
-	if token.
-		Symbol.
-		Valid {
+	if token.Symbol.Valid {
 
-		scId = fmt.Sprintf("%s (%s)",
-			scId,
-			token.
-				Symbol.
-				String)
+		scId = fmt.Sprintf("%s (%s)", scId, token.Symbol.String)
 	}
 
-	t.scIdEditor.
-		SetText(scId)
+	t.scIdEditor.SetText(scId)
 
 	t.token = token
 }
@@ -689,117 +632,82 @@ func (t *TokenContainer) Layout(gtx layout.Context, th *material.Theme) layout.D
 	r := op.
 		Record(gtx.Ops)
 
-	dims := layout.
-		UniformInset(unit.Dp(10)).
-		Layout(gtx, func(
-			gtx layout.Context) layout.Dimensions {
-			return layout.
-				Flex{
-				Axis: layout.
-					Horizontal,
-
-				Alignment: layout.
-					Middle,
-			}.Layout(gtx,
+	dims := layout.UniformInset(unit.Dp(10)).Layout(
+		gtx,
+		func(gtx layout.Context) layout.Dimensions {
+			return layout.Flex{
+				Axis:      layout.Horizontal,
+				Alignment: layout.Middle,
+			}.Layout(
+				gtx,
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
-						t.tokenImagerHover.
-							Image.
-							Src = t.token.
-							LoadImageOp()
+						t.tokenImagerHover.Image.Src = t.token.LoadImageOp()
 
-						if t.tokenImagerHover.
-							Clickable.
-							Clicked() {
-
-							image_modal.
-								Instance.
-								Open(
-									t.token.Name,
-									t.tokenImagerHover.
-										Image.
-										Src)
+						if t.tokenImagerHover.Clickable.Clicked() {
+							image_modal.Instance.Open(
+								t.token.Name,
+								t.tokenImagerHover.Image.Src,
+							)
 						}
 
-						gtx.
-							Constraints.
-							Max.
-							X = gtx.Dp(50)
+						gtx.Constraints.Max.X = gtx.Dp(50)
 
-						gtx.
-							Constraints.
-							Max.
-							Y = gtx.Dp(50)
+						gtx.Constraints.Max.Y = gtx.Dp(50)
 
-						return t.tokenImagerHover.
-							Layout(gtx)
-					}),
+						return t.tokenImagerHover.Layout(gtx)
+					},
+				),
 
 				layout.Rigid(
-					layout.
-						Spacer{
-						Width: unit.Dp(10)}.Layout),
+					layout.Spacer{
+						Width: unit.Dp(10)}.Layout,
+				),
 
 				layout.Rigid(
-					func(
-						gtx layout.Context) layout.Dimensions {
-						return layout.
-							Flex{Axis: layout.Vertical}.
-							Layout(gtx,
-								layout.Rigid(
-									func(
-										gtx layout.Context) layout.Dimensions {
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis: layout.Vertical,
+						}.Layout(
+							gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
 
-										editor := material.
-											Editor(th, t.nameEditor, "")
+									editor := material.Editor(th, t.nameEditor, "")
 
-										editor.
-											Font.
-											Weight = font.Bold
+									editor.Font.Weight = font.Bold
 
-										editor.
-											TextSize = unit.Sp(22)
+									editor.TextSize = unit.Sp(22)
 
-										return editor.
-											Layout(gtx)
-									}),
+									return editor.Layout(gtx)
+								}),
 
-								layout.Rigid(
-									func(
-										gtx layout.Context) layout.Dimensions {
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
 
-										editor := material.
-											Editor(th, t.scIdEditor, "")
+									editor := material.Editor(th, t.scIdEditor, "")
 
-										editor.
-											Color = theme.
-											Current.
-											TextMuteColor
-
-										return editor.
-											Layout(gtx)
-									}),
-							)
-					}),
+									editor.Color = theme.Current.TextMuteColor
+									return editor.Layout(gtx)
+								},
+							),
+						)
+					},
+				),
 			)
-		})
+		},
+	)
 
 	c := r.Stop()
 
-	paint.
-		FillShape(
-			gtx.
-				Ops,
-
-			theme.
-				Current.
-				ListBgColor,
-
-			clip.
-				UniformRRect(
-					image.
-						Rectangle{Max: dims.Size}, gtx.Dp(10),
-				).Op(gtx.Ops))
+	paint.FillShape(
+		gtx.Ops,
+		theme.Current.ListBgColor,
+		clip.UniformRRect(
+			image.Rectangle{Max: dims.Size},
+			gtx.Dp(10),
+		).Op(gtx.Ops),
+	)
 
 	c.Add(gtx.Ops)
 	return dims
