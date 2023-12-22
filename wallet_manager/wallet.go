@@ -479,8 +479,16 @@ func (w *Wallet) BuildTransaction(transfers []rpc.Transfer, ringsize uint64, scA
 	// set fees to 1 to avoid automatic fees in statement
 	// fee value is store in tx but its too small for making any adjustments
 	tx = w.Memory.BuildTransaction(
-		transfers, ringMembers.RingsBalances, ringMembers.Rings, blockHash,
-		height, scArgs, treeHashRaw, ringMembers.MaxBits, 1)
+		transfers,
+		ringMembers.RingsBalances,
+		ringMembers.Rings,
+		blockHash,
+		height,
+		scArgs,
+		treeHashRaw,
+		ringMembers.MaxBits,
+		1,
+	)
 	if tx == nil {
 		err = fmt.Errorf("can't build transaction")
 		return
@@ -499,8 +507,17 @@ func (w *Wallet) BuildTransaction(transfers []rpc.Transfer, ringsize uint64, scA
 	feesPerTransfer := uint64(math.Ceil(float64(totalFees) / float64(deroTransfers)))
 
 	tx = w.Memory.BuildTransaction(
-		transfers, ringMembers.RingsBalances, ringMembers.Rings, blockHash,
-		height, scArgs, treeHashRaw, ringMembers.MaxBits, feesPerTransfer)
+		transfers,
+		ringMembers.RingsBalances,
+		ringMembers.Rings,
+		blockHash,
+		height,
+		scArgs,
+		treeHashRaw,
+		ringMembers.MaxBits,
+		feesPerTransfer,
+	)
+
 	if tx == nil {
 		err = fmt.Errorf("can't build transaction")
 		return
