@@ -12,6 +12,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
+	"gioui.org/text"
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
@@ -30,9 +31,12 @@ import (
 
 type PageTransaction struct {
 	isActive bool
+	list     *widget.List
 
 	animationEnter *animation.Animation
 	animationLeave *animation.Animation
+
+	infoRows []*prefabs.InfoRow
 
 	entry wallet_manager.Entry
 
@@ -43,12 +47,10 @@ type PageTransaction struct {
 	blockHashEditor         *widget.Editor
 	proofEditor             *widget.Editor
 	scDataEditor            *widget.Editor
-	infoRows                []*prefabs.InfoRow
-	txTransfers             *TxTransfers
+
+	txTransfers *TxTransfers
 
 	payloadList []*RPCArgInfo
-
-	list *widget.List
 }
 
 var _ router.Page = &PageTransaction{}
@@ -182,23 +184,26 @@ func (p *PageTransaction) Layout(gtx layout.Context, th *material.Theme) layout.
 			return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 					r := op.Record(gtx.Ops)
-					dims := layout.UniformInset(unit.Dp(15)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:      layout.Horizontal,
-							Alignment: layout.Middle,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-								gtx.Constraints.Max.X = gtx.Dp(50)
-								gtx.Constraints.Max.Y = gtx.Dp(50)
-								return p.txTypeImg.Layout(gtx)
-							}),
-							layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
-							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-								editor := material.Editor(th, p.txIdEditor, "")
-								return editor.Layout(gtx)
-							}),
-						)
-					})
+					dims := layout.UniformInset(unit.Dp(15)).Layout(
+						gtx,
+						func(gtx layout.Context) layout.Dimensions {
+							return layout.Flex{
+								Axis:      layout.Horizontal,
+								Alignment: layout.Middle,
+							}.Layout(
+								gtx,
+								layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+									gtx.Constraints.Max.X = gtx.Dp(50)
+									gtx.Constraints.Max.Y = gtx.Dp(50)
+									return p.txTypeImg.Layout(gtx)
+								}),
+								layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
+								layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+									editor := material.Editor(th, p.txIdEditor, "")
+									return editor.Layout(gtx)
+								}),
+							)
+						})
 					c := r.Stop()
 
 					paint.FillShape(gtx.Ops, theme.Current.ListBgColor,
@@ -353,7 +358,7 @@ func (p *PageTransaction) Layout(gtx layout.Context, th *material.Theme) layout.
 	})
 
 	listStyle := material.List(th, p.list)
-	listStyle.AnchorStrategy = material.Overlay
+	listStyle.AnchorStrategy = material.Occupy
 
 	return listStyle.Layout(gtx, len(widgets), func(gtx layout.Context, index int) layout.Dimensions {
 		return layout.Inset{
@@ -410,8 +415,11 @@ func (p *RPCArgInfo) Layout(gtx layout.Context, th *material.Theme) layout.Dimen
 		layout.Rigid(layout.Spacer{Height: unit.Dp(5)}.Layout),
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			editor := material.Editor(th, p.editor, "")
+			editor.Editor.WrapPolicy = text.WrapHeuristically
+			editor.Editor.SingleLine = 0 != 0
 			return editor.Layout(gtx)
-		}),
+		},
+		),
 	)
 }
 
