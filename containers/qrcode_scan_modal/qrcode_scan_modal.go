@@ -207,91 +207,133 @@ func (w *CameraQRScanModal) layout(gtx layout.Context, th *material.Theme) {
 	}
 
 	w.Modal.Style.Colors = theme.Current.ModalColors
-	w.Modal.Layout(gtx, nil, func(gtx layout.Context) layout.Dimensions {
-		return layout.UniformInset(unit.Dp(15)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-			var childs []layout.FlexChild
-			if w.scanning {
-				childs = append(childs,
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						w.cameraImage.Transform = func(dims layout.Dimensions, trans f32.Affine2D) f32.Affine2D {
-							pt := dims.Size.Div(2)
-							origin := f32.Pt(float32(pt.X), float32(pt.Y))
-							rotate := float32(w.cameraOrientation) * (math.Pi / 180)
-							return trans.Rotate(origin, rotate)
-						}
+	w.Modal.Layout(
+		gtx,
+		nil,
+		func(gtx layout.Context) layout.Dimensions {
+			return layout.UniformInset(
+				unit.Dp(15),
+			).Layout(
+				gtx, func(gtx layout.Context) layout.Dimensions {
+					var childs []layout.FlexChild
+					if w.scanning {
+						childs = append(
+							childs,
+							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+								w.cameraImage.Transform = func(dims layout.Dimensions, trans f32.Affine2D) f32.Affine2D {
+									pt := dims.Size.Div(2)
+									origin := f32.Pt(float32(pt.X), float32(pt.Y))
+									rotate := float32(w.cameraOrientation) * (math.Pi / 180)
+									return trans.Rotate(origin, rotate)
+								}
 
-						return w.cameraImage.Layout(gtx)
-					}),
-				)
-			}
+								return w.cameraImage.Layout(gtx)
+							},
+							),
+						)
+					}
 
-			if w.err != nil {
-				childs = append(childs,
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						lbl := material.Label(th, unit.Sp(14), w.err.Error())
-						return lbl.Layout(gtx)
-					}),
-					layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-							layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-								w.buttonCancel.Text = lang.Translate("CANCEL")
-								w.buttonCancel.Style.Colors = theme.Current.ButtonPrimaryColors
-								return w.buttonCancel.Layout(gtx, th)
+					if w.err != nil {
+						childs = append(childs,
+							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+								lbl := material.Label(th, unit.Sp(14), w.err.Error())
+								return lbl.Layout(gtx)
 							}),
-							layout.Rigid(layout.Spacer{Width: unit.Dp(15)}.Layout),
-							layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-								w.buttonRetry.Text = lang.Translate("RETRY")
-								w.buttonRetry.Style.Colors = theme.Current.ButtonPrimaryColors
-								return w.buttonRetry.Layout(gtx, th)
+							layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
+							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+								return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+									layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+										w.buttonCancel.Text = lang.Translate("CANCEL")
+										w.buttonCancel.Style.Colors = theme.Current.ButtonPrimaryColors
+										return w.buttonCancel.Layout(gtx, th)
+									}),
+									layout.Rigid(layout.Spacer{Width: unit.Dp(15)}.Layout),
+									layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+										w.buttonRetry.Text = lang.Translate("RETRY")
+										w.buttonRetry.Style.Colors = theme.Current.ButtonPrimaryColors
+										return w.buttonRetry.Layout(gtx, th)
+									}),
+								)
 							}),
 						)
-					}),
-				)
-			}
+					}
 
-			if w.scanning {
-				childs = append(childs,
-					layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{Axis: layout.Horizontal}.Layout(gtx, layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-							w.buttonCancel.Text = lang.Translate("CANCEL")
-							w.buttonCancel.Style.Colors = theme.Current.ButtonPrimaryColors
-							return w.buttonCancel.Layout(gtx, th)
-						}))
-					}),
-				)
-			}
+					if w.scanning {
+						childs = append(
+							childs,
+							layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{
+										Axis: layout.Horizontal,
+									}.Layout(
+										gtx,
+										layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+											w.buttonCancel.Text = lang.Translate("CANCEL")
+											w.buttonCancel.Style.Colors = theme.Current.ButtonPrimaryColors
+											return w.buttonCancel.Layout(gtx, th)
+										},
+										),
+									)
+								},
+							),
+						)
+					}
 
-			if w.scanned {
-				childs = append(childs, layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-							lbl := material.Label(th, unit.Sp(14), w.value)
-							lbl.Alignment = text.Middle
-							return lbl.Layout(gtx)
-						}),
-						layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
-						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-							return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
-								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-									w.buttonRetry.Text = lang.Translate("RETRY")
-									w.buttonRetry.Style.Colors = theme.Current.ButtonPrimaryColors
-									return w.buttonRetry.Layout(gtx, th)
-								}),
-								layout.Rigid(layout.Spacer{Width: unit.Dp(15)}.Layout),
-								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-									w.buttonOk.Text = lang.Translate("OK")
-									w.buttonOk.Style.Colors = theme.Current.ButtonPrimaryColors
-									return w.buttonOk.Layout(gtx, th)
-								}),
-							)
-						}),
-					)
-				}))
-			}
+					if w.scanned {
+						childs = append(
+							childs,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{
+										Axis: layout.Vertical,
+									}.Layout(
+										gtx,
+										layout.Rigid(
+											func(gtx layout.Context) layout.Dimensions {
+												lbl := material.Label(th, unit.Sp(14), w.value)
+												lbl.Alignment = text.Middle
+												return lbl.Layout(gtx)
+											},
+										),
 
-			return layout.Flex{Axis: layout.Vertical}.Layout(gtx, childs...)
-		})
-	})
+										layout.Rigid(layout.Spacer{Height: unit.Dp(15)}.Layout),
+
+										layout.Rigid(
+											func(gtx layout.Context) layout.Dimensions {
+												return layout.Flex{
+													Axis: layout.Horizontal,
+												}.Layout(
+													gtx,
+													layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+														w.buttonRetry.Text = lang.Translate("RETRY")
+														w.buttonRetry.Style.Colors = theme.Current.ButtonPrimaryColors
+														return w.buttonRetry.Layout(gtx, th)
+													},
+													),
+
+													layout.Rigid(layout.Spacer{Width: unit.Dp(15)}.Layout),
+													layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+														w.buttonOk.Text = lang.Translate("OK")
+														w.buttonOk.Style.Colors = theme.Current.ButtonPrimaryColors
+														return w.buttonOk.Layout(gtx, th)
+													},
+													),
+												)
+											},
+										),
+									)
+								},
+							),
+						)
+					}
+					return layout.Flex{
+						Axis: layout.Vertical,
+					}.Layout(
+						gtx,
+						childs...)
+				},
+			)
+		},
+	)
 }
