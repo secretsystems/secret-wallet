@@ -388,46 +388,20 @@ func (p *PageSendForm) ClearForm() {
 }
 
 func (p *PageSendForm) prepareTx() error {
+	var arguments rpc.Arguments
+	amount := &utils.ShiftNumber{
+		Decimals: int(p.token.Decimals),
+	}
+
 	wallet := wallet_manager.OpenedWallet
 
-	txtAmount := p.txtAmount
-
-	if txtAmount.Value() == "" {
-		return fmt.Errorf(lang.Translate(
-			"Amount cannot be empty.",
-		))
-	}
-
-	amount := &utils.ShiftNumber{Decimals: int(p.token.Decimals)}
-
-	err := amount.Parse(txtAmount.Value())
-
-	if err != nil {
-		return err
-	}
-
-	if amount.Number == 0 {
-		return fmt.Errorf(lang.Translate(
-			"Amount must be greater than 0.",
-		))
-	}
-
 	txtWalletAddr := p.walletAddrInput.txtWalletAddr
-
 	if txtWalletAddr.Value() == "" {
 		return fmt.Errorf(lang.Translate(
 			"Destination address is empty.",
 		))
 	}
-
-	txtComment := page_instance.pageSendOptionsForm.txtComment
-
-	txtDstPort := page_instance.pageSendOptionsForm.txtDstPort
-
-	var arguments rpc.Arguments
-
 	addrValue := txtWalletAddr.Value()
-
 	address, err := rpc.NewAddress(addrValue)
 
 	if err != nil {
@@ -447,35 +421,45 @@ func (p *PageSendForm) prepareTx() error {
 			return err
 		}
 	}
-
+	// Validate the address first
 	if address.IsIntegratedAddress() {
+
 		err = address.Arguments.Validate_Arguments()
 
 		if err != nil {
 			return err
 		}
 
-		if !address.Arguments.Has(rpc.RPC_DESTINATION_PORT, rpc.DataUint64) {
-
-			return fmt.Errorf(lang.Translate(
-				"The integrated address does not contain a destination port.",
-			))
+		if address.Arguments.Has(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64) {
+			amount.Number = address.Arguments.Value(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64).(uint64)
+			arguments = append(
+				arguments, rpc.Argument{
+					Name:     rpc.RPC_VALUE_TRANSFER,
+					DataType: rpc.DataUint64,
+					Value:    amount.Number,
+				},
+			)
 		}
 
-		destinationPort := address.Arguments.Value(rpc.RPC_DESTINATION_PORT, rpc.DataUint64).(uint64)
+		if !address.Arguments.Has(rpc.RPC_DESTINATION_PORT, rpc.DataUint64) {
+			return fmt.Errorf(
+				lang.Translate(
+					"The integrated address does not contain a destination port.",
+				),
+			)
+		}
 
+		dstPort := address.Arguments.Value(rpc.RPC_DESTINATION_PORT, rpc.DataUint64).(uint64)
 		arguments = append(
 			arguments, rpc.Argument{
 				Name:     rpc.RPC_DESTINATION_PORT,
 				DataType: rpc.DataUint64,
-				Value:    destinationPort,
+				Value:    dstPort,
 			},
 		)
 
 		if address.Arguments.Has(rpc.RPC_COMMENT, rpc.DataString) {
-
 			comment := address.Arguments.Value(rpc.RPC_COMMENT, rpc.DataString).(string)
-
 			arguments = append(
 				arguments, rpc.Argument{
 					Name:     rpc.RPC_COMMENT,
@@ -499,8 +483,25 @@ func (p *PageSendForm) prepareTx() error {
 
 	} else {
 
-		comment := txtComment.
-			Value()
+		txtAmount := p.txtAmount
+		if txtAmount.Value() == "" {
+			return fmt.Errorf(lang.Translate(
+				"Amount cannot be empty.",
+			))
+		}
+
+		err := amount.Parse(txtAmount.Value())
+
+		if err != nil {
+			return err
+		}
+
+		txtComment := page_instance.pageSendOptionsForm.txtComment
+
+		txtDstPort := page_instance.pageSendOptionsForm.txtDstPort
+
+		// use all the stuff from the options page
+		comment := txtComment.Value()
 
 		if len(comment) > 0 {
 			arguments = append(
@@ -512,10 +513,10 @@ func (p *PageSendForm) prepareTx() error {
 			)
 		}
 
-		destPortString := txtDstPort.Value()
+		dstPortString := txtDstPort.Value()
 
-		if len(destPortString) > 0 {
-			destPort, err := strconv.ParseUint(destPortString, 10, 64)
+		if len(dstPortString) > 0 {
+			dstPort, err := strconv.ParseUint(dstPortString, 10, 64)
 
 			if err != nil {
 				return err
@@ -525,16 +526,21 @@ func (p *PageSendForm) prepareTx() error {
 				arguments, rpc.Argument{
 					Name:     rpc.RPC_DESTINATION_PORT,
 					DataType: rpc.DataUint64,
-					Value:    destPort,
+					Value:    dstPort,
 				},
 			)
 		}
-	}
 
-	_, err = arguments.CheckPack(transaction.PAYLOAD0_LIMIT)
+		if amount.Number == 0 {
+			return fmt.Errorf(lang.Translate(
+				"Amount must be greater than 0.",
+			))
+		}
+		_, err = arguments.CheckPack(transaction.PAYLOAD0_LIMIT)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	scId := p.token.GetHash()
@@ -714,354 +720,238 @@ func (t *TokenContainer) Layout(gtx layout.Context, th *material.Theme) layout.D
 }
 
 type WalletAddrInput struct {
-	txtWalletAddr *prefabs.
-			Input
+	txtWalletAddr *prefabs.Input
 
-	buttonAddrMenu *components.
-			Button
+	buttonAddrMenu *components.Button
 
-	newContactClickable *widget.
-				Clickable
+	newContactClickable *widget.Clickable
 
-	txtDims layout.
-		Dimensions
+	txtDims layout.Dimensions
 }
 
 func NewWalletAddrInput() *WalletAddrInput {
-	txtWalletAddr := prefabs.
-		NewInput()
+	txtWalletAddr := prefabs.NewInput()
 
-	addrIcon, _ := widget.
-		NewIcon(
-			icons.
-				SocialPeople)
+	addrIcon, _ := widget.NewIcon(icons.SocialPeople)
 
-	buttonAddrMenu := components.
-		NewButton(components.
-			ButtonStyle{
-			Rounded: components.
-				UniformRounded(unit.Dp(5)),
-			Icon: addrIcon,
-			Animation: components.
-				NewButtonAnimationDefault(),
-		})
+	buttonAddrMenu := components.NewButton(components.ButtonStyle{
+		Rounded:   components.UniformRounded(unit.Dp(5)),
+		Icon:      addrIcon,
+		Animation: components.NewButtonAnimationDefault(),
+	},
+	)
 
 	return &WalletAddrInput{
 		txtWalletAddr:  txtWalletAddr,
 		buttonAddrMenu: buttonAddrMenu,
 		newContactClickable: new(
-			widget.
-				Clickable),
+			widget.Clickable,
+		),
 	}
 }
 
 func (p *WalletAddrInput) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
-	if p.buttonAddrMenu.
-		Clicked() {
+	if p.buttonAddrMenu.Clicked() {
 		go func() {
-			contactIcon, _ := widget.
-				NewIcon(icons.SocialGroup)
-
-			scanIcon, _ := widget.
-				NewIcon(app_icons.QRCodeScanner)
-
-			keyChan := listselect_modal.
-				Instance.
-				Open(
-					[]*listselect_modal.
-						SelectListItem{
-						listselect_modal.
-							NewSelectListItem(
-								"contact_list",
-								listselect_modal.
-									NewItemText(
-										contactIcon,
-										lang.
-											Translate(
-												"Contact list")).Layout,
+			contactIcon, _ := widget.NewIcon(icons.SocialGroup)
+			scanIcon, _ := widget.NewIcon(app_icons.QRCodeScanner)
+			keyChan := listselect_modal.Instance.Open(
+				[]*listselect_modal.SelectListItem{
+					listselect_modal.NewSelectListItem(
+						"contact_list",
+						listselect_modal.NewItemText(
+							contactIcon,
+							lang.Translate(
+								"Contact list",
 							),
+						).Layout,
+					),
 
-						listselect_modal.
-							NewSelectListItem(
-								"scan_qrcode",
-								listselect_modal.
-									NewItemText(
-										scanIcon,
-										lang.
-											Translate(
-												"Scan QR code")).Layout,
+					listselect_modal.NewSelectListItem(
+						"scan_qrcode",
+						listselect_modal.NewItemText(
+							scanIcon,
+							lang.Translate(
+								"Scan QR code",
 							),
-					})
+						).Layout,
+					),
+				},
+			)
 
 			for key := range keyChan {
 				switch key {
 
 				case "contact_list":
-					page_instance.
-						pageRouter.
-						SetCurrent(
-							PAGE_CONTACTS)
+					page_instance.pageRouter.SetCurrent(
+						PAGE_CONTACTS,
+					)
 
-					page_instance.header.
-						AddHistory(
-							PAGE_CONTACTS)
+					page_instance.header.AddHistory(
+						PAGE_CONTACTS,
+					)
 
 				case "scan_qrcode":
-					qrcode_scan_modal.
-						Instance.
-						Open()
+					qrcode_scan_modal.Instance.Open()
 				}
 			}
 		}()
 	}
 
 	{
-		sent, value := qrcode_scan_modal.
-			Instance.
-			Value()
+		sent, value := qrcode_scan_modal.Instance.Value()
 
 		if sent {
-			p.txtWalletAddr.
-				SetValue(value)
+			p.txtWalletAddr.SetValue(value)
 		}
 	}
 
-	var childs []layout.
-		FlexChild
+	var childs []layout.FlexChild
 
 	childs = append(
 		childs,
 		layout.Rigid(
-			func(
-				gtx layout.Context) layout.Dimensions {
-				lbl := material.
-					Label(th, unit.Sp(20),
-						lang.
-							Translate(
-								"DERO Address / Name"))
-				lbl.
-					Font.
-					Weight = font.Bold
+			func(gtx layout.Context) layout.Dimensions {
+				lbl := material.Label(th, unit.Sp(20), lang.Translate("DERO Address / Name"))
+				lbl.Font.Weight = font.Bold
+				return lbl.Layout(gtx)
+			},
+		),
 
-				return lbl.
-					Layout(gtx)
-			}),
+		layout.Rigid(layout.Spacer{Height: unit.Dp(3)}.Layout),
 
 		layout.Rigid(
-			layout.Spacer{
-				Height: unit.Dp(3)}.Layout),
-
-		layout.Rigid(
-			func(
-				gtx layout.Context) layout.Dimensions {
-				return layout.
-					Flex{
-					Axis: layout.Horizontal}.
-					Layout(gtx,
-						layout.Flexed(1, func(
-							gtx layout.Context) layout.Dimensions {
-
-							p.txtWalletAddr.
-								Colors = theme.
-								Current.
-								InputColors
-
-							p.txtDims = p.txtWalletAddr.
-								Layout(gtx, th, "")
-
+			func(gtx layout.Context) layout.Dimensions {
+				return layout.Flex{
+					Axis: layout.Horizontal,
+				}.Layout(
+					gtx,
+					layout.Flexed(
+						1,
+						func(gtx layout.Context) layout.Dimensions {
+							p.txtWalletAddr.Colors = theme.Current.InputColors
+							p.txtDims = p.txtWalletAddr.Layout(gtx, th, "")
 							return p.txtDims
 						}),
 
-						layout.Rigid(
-							layout.Spacer{
-								Width: unit.Dp(10)}.Layout),
+					layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
 
-						layout.Rigid(
-							func(
-								gtx layout.Context) layout.Dimensions {
-								p.buttonAddrMenu.
-									Style.
-									Colors = theme.
-									Current.
-									ButtonPrimaryColors
-								p.buttonAddrMenu.
-									Flex = true
-
-								size := image.
-									Pt(
-										p.txtDims.Size.Y,
-										p.txtDims.Size.Y)
-
-								gtx.
-									Constraints.
-									Min = size
-
-								gtx.
-									Constraints.
-									Max = size
-
-								return p.buttonAddrMenu.
-									Layout(gtx, th)
-							}),
-					)
-			}),
+					layout.Rigid(
+						func(gtx layout.Context) layout.Dimensions {
+							p.buttonAddrMenu.Style.Colors = theme.Current.ButtonPrimaryColors
+							p.buttonAddrMenu.Flex = true
+							size := image.Pt(
+								p.txtDims.Size.Y,
+								p.txtDims.Size.Y,
+							)
+							gtx.Constraints.Min = size
+							gtx.Constraints.Max = size
+							return p.buttonAddrMenu.Layout(gtx, th)
+						}),
+				)
+			},
+		),
 	)
 
-	addr := p.txtWalletAddr.
-		Editor.
-		Text()
+	addr := p.txtWalletAddr.Editor.Text()
 
-	wallet := wallet_manager.
-		OpenedWallet
+	wallet := wallet_manager.OpenedWallet
 
 	if wallet != nil {
-		contact, _ := wallet.
-			GetContact(addr)
+		contact, _ := wallet.GetContact(addr)
 
 		if contact != nil {
 			childs = append(
 				childs,
 				layout.Rigid(
-					func(gtx layout.Context) layout.
-						Dimensions {
-						return layout.
-							Flex{
-							Axis: layout.Vertical}.
-							Layout(gtx,
-								layout.Rigid(
-									layout.
-										Spacer{
-										Height: unit.Dp(3)}.Layout),
-
-								layout.Rigid(
-									func(gtx layout.Context) layout.
-										Dimensions {
-										return layout.
-											Flex{
-											Axis: layout.Horizontal}.
-											Layout(gtx,
-												layout.Rigid(
-													func(gtx layout.Context) layout.
-														Dimensions {
-
-														lbl := material.
-															Label(
-																th,
-																unit.
-																	Sp(16),
-																lang.
-																	Translate(
-																		"Matching contact:"))
-														lbl.
-															Color = theme.
-															Current.
-															TextMuteColor
-
-														return lbl.
-															Layout(gtx)
-													}),
-												layout.Rigid(
-													layout.
-														Spacer{Width: unit.Dp(3)}.Layout),
-												layout.Rigid(
-													func(gtx layout.Context) layout.
-														Dimensions {
-
-														lbl := material.
-															Label(
-																th,
-																unit.
-																	Sp(16),
-																contact.
-																	Name)
-
-														lbl.
-															Font.
-															Weight = font.Bold
-
-														return lbl.
-															Layout(gtx)
-													}),
-											)
-									}),
-							)
-					}),
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis: layout.Vertical,
+						}.Layout(
+							gtx,
+							layout.Rigid(layout.Spacer{Height: unit.Dp(3)}.Layout),
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{
+										Axis: layout.Horizontal,
+									}.Layout(
+										gtx,
+										layout.Rigid(
+											func(gtx layout.Context) layout.Dimensions {
+												lbl := material.Label(
+													th,
+													unit.Sp(16),
+													lang.Translate(
+														"Matching contact:",
+													),
+												)
+												lbl.Color = theme.Current.TextMuteColor
+												return lbl.Layout(gtx)
+											},
+										),
+										layout.Rigid(layout.Spacer{Width: unit.Dp(3)}.Layout),
+										layout.Rigid(
+											func(gtx layout.Context) layout.Dimensions {
+												lbl := material.Label(
+													th,
+													unit.Sp(16),
+													contact.Name,
+												)
+												lbl.Font.Weight = font.Bold
+												return lbl.Layout(gtx)
+											},
+										),
+									)
+								},
+							),
+						)
+					},
+				),
 			)
 		} else if addr != "" {
-			if p.newContactClickable.
-				Hovered() {
-				pointer.
-					CursorPointer.
-					Add(gtx.Ops)
+			if p.newContactClickable.Hovered() {
+				pointer.CursorPointer.Add(gtx.Ops)
 			}
 
-			if p.newContactClickable.
-				Clicked() {
-
-				page_instance.
-					pageContactForm.
-					ClearForm()
-
-				page_instance.
-					pageContactForm.
-					txtAddr.
-					SetValue(addr)
-
-				page_instance.
-					pageRouter.
-					SetCurrent(PAGE_CONTACT_FORM)
-
-				page_instance.
-					header.
-					AddHistory(PAGE_CONTACT_FORM)
+			if p.newContactClickable.Clicked() {
+				page_instance.pageContactForm.ClearForm()
+				page_instance.pageContactForm.txtAddr.SetValue(addr)
+				page_instance.pageRouter.SetCurrent(PAGE_CONTACT_FORM)
+				page_instance.header.AddHistory(PAGE_CONTACT_FORM)
 			}
 
 			childs = append(
 				childs,
-				layout.
-					Rigid(
-						func(gtx layout.Context) layout.
-							Dimensions {
-							return layout.
-								Flex{
-								Axis: layout.Vertical}.
-								Layout(
-									gtx,
-
-									layout.
-										Rigid(
-											layout.
-												Spacer{
-												Height: unit.Dp(3)}.Layout),
-
-									layout.
-										Rigid(
-											func(gtx layout.Context) layout.
-												Dimensions {
-												return p.newContactClickable.
-													Layout(gtx,
-														func(gtx layout.Context) layout.
-															Dimensions {
-															lbl := material.
-																Label(
-																	th,
-																	unit.
-																		Sp(16),
-																	lang.
-																		Translate(
-																			"Create new contact?"))
-
-															return lbl.
-																Layout(gtx)
-														})
-											}),
-								)
-						}))
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis: layout.Vertical,
+						}.Layout(
+							gtx,
+							layout.Rigid(layout.Spacer{Height: unit.Dp(3)}.Layout),
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return p.newContactClickable.Layout(
+										gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											lbl := material.Label(
+												th,
+												unit.Sp(16),
+												lang.Translate("Create new contact?"))
+											return lbl.Layout(gtx)
+										},
+									)
+								},
+							),
+						)
+					},
+				),
+			)
 		}
 	}
 
 	return layout.
 		Flex{
-		Axis: layout.Vertical}.
-		Layout(gtx, childs...)
+		Axis: layout.Vertical,
+	}.Layout(gtx, childs...)
 }
