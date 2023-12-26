@@ -13,6 +13,18 @@ import (
 	"github.com/tanema/gween/ease"
 )
 
+var (
+	infoItems = []*InfoListItem{
+		// do not remove @lang.Translate comment
+		// it's used by the python script to generate language json dictionary
+		// we don't use lang.Translate directly here because it needs to be inside the Layout func or the value won't be updated after language change
+		NewInfoListItem("Website", "https://dero.io", text.WrapGraphemes),                      //@lang.Translate("App Directory")
+		NewInfoListItem("Github", "https://github.com/deroproject/derohe", text.WrapGraphemes), //@lang.Translate("Wallets Directory")
+		NewInfoListItem("Forum", "https://forum.dero.io", text.WrapGraphemes),                  //@lang.Translate("Cache Directory")
+		NewInfoListItem("Docs", "https://docs.dero.io", text.WrapGraphemes),                    //@lang.Translate("Version")
+	}
+)
+
 type PageDero struct {
 	isActive       bool
 	list           *widget.List
@@ -32,16 +44,6 @@ func NewPageDero() *PageDero {
 
 	list := new(widget.List)
 	list.Axis = layout.Vertical
-
-	// do not remove @lang.Translate comment
-	// it's used by the python script to generate language json dictionary
-	// we don't use lang.Translate directly here because it needs to be inside the Layout func or the value won't be updated after language change
-	infoItems := []*InfoListItem{
-		NewInfoListItem("Website", "https://dero.io", text.WrapGraphemes),                      //@lang.Translate("App Directory")
-		NewInfoListItem("Github", "https://github.com/deroproject/derohe", text.WrapGraphemes), //@lang.Translate("Wallets Directory")
-		NewInfoListItem("Forum", "https://forum.dero.io", text.WrapGraphemes),                  //@lang.Translate("Cache Directory")
-		NewInfoListItem("Docs", "https://docs.dero.io", text.WrapGraphemes),                    //@lang.Translate("Version")
-	}
 
 	return &PageDero{
 		infoItems:      infoItems,
