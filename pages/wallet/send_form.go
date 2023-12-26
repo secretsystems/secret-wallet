@@ -205,6 +205,7 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 			op.InvalidateOp{}.Add(gtx.Ops)
 		}
 	}
+	// Prioritize DERO Integrated addresses are for DERO services
 	if p.walletAddrInput.txtWalletAddr.Value() != "" {
 		walletString := p.walletAddrInput.txtWalletAddr.Value()
 		address, _ := rpc.NewAddress(walletString)
@@ -758,7 +759,7 @@ type WalletAddrInput struct {
 func NewWalletAddrInput() *WalletAddrInput {
 	txtWalletAddr := prefabs.NewInput()
 
-	addrIcon, _ := widget.NewIcon(icons.ActionSearch)
+	addrIcon, _ := widget.NewIcon(icons.ActionSearch) // search icon
 
 	buttonAddrMenu := components.NewButton(components.ButtonStyle{
 		Rounded:   components.UniformRounded(unit.Dp(5)),
