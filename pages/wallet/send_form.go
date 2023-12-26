@@ -205,6 +205,19 @@ func (p *PageSendForm) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 			op.InvalidateOp{}.Add(gtx.Ops)
 		}
 	}
+	if p.walletAddrInput.txtWalletAddr.Value() != "" {
+		walletString := p.walletAddrInput.txtWalletAddr.Value()
+		address, _ := rpc.NewAddress(walletString)
+
+		if address != nil {
+			if address.Arguments.Has(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64) {
+				amountUint := address.Arguments.Value(rpc.RPC_VALUE_TRANSFER, rpc.DataUint64).(uint64)
+				deroAmount := float64(amountUint) / 100000 // Convert atomic to DERO
+				p.txtAmount.SetValue(fmt.Sprintf("%.5f", deroAmount))
+			}
+		}
+
+	}
 
 	if p.buttonBuildTx.Clicked() {
 		go func() {
@@ -745,7 +758,7 @@ type WalletAddrInput struct {
 func NewWalletAddrInput() *WalletAddrInput {
 	txtWalletAddr := prefabs.NewInput()
 
-	addrIcon, _ := widget.NewIcon(icons.SocialPeople)
+	addrIcon, _ := widget.NewIcon(icons.ActionSearch)
 
 	buttonAddrMenu := components.NewButton(components.ButtonStyle{
 		Rounded:   components.UniformRounded(unit.Dp(5)),
@@ -764,7 +777,7 @@ func NewWalletAddrInput() *WalletAddrInput {
 }
 
 func (p *WalletAddrInput) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
-	if p.buttonAddrMenu.Clicked() {
+	if p.buttonAddrMenu.Clicked() { // contact button
 		go func() {
 			contactIcon, _ := widget.NewIcon(icons.SocialGroup)
 			scanIcon, _ := widget.NewIcon(app_icons.QRCodeScanner)
@@ -860,7 +873,8 @@ func (p *WalletAddrInput) Layout(gtx layout.Context, th *material.Theme) layout.
 							gtx.Constraints.Min = size
 							gtx.Constraints.Max = size
 							return p.buttonAddrMenu.Layout(gtx, th)
-						}),
+						},
+					),
 				)
 			},
 		),
