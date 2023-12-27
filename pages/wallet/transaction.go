@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"gioui.org/font"
+	"gioui.org/io/clipboard"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
@@ -19,6 +20,7 @@ import (
 	"github.com/deroproject/derohe/rpc"
 	"github.com/g45t345rt/g45w/animation"
 	"github.com/g45t345rt/g45w/components"
+	"github.com/g45t345rt/g45w/containers/notification_modals"
 	"github.com/g45t345rt/g45w/lang"
 	"github.com/g45t345rt/g45w/prefabs"
 	"github.com/g45t345rt/g45w/router"
@@ -27,6 +29,7 @@ import (
 	"github.com/g45t345rt/g45w/wallet_manager"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
+	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 
 type PageTransaction struct {
@@ -291,7 +294,10 @@ func (p *PageTransaction) Layout(gtx layout.Context, th *material.Theme) layout.
 			}),
 		)
 	})
-
+	// to do
+	// we need to break out the tx proof structure
+	// basically what was done for the tx comment
+	// good luck
 	if !p.entry.Coinbase {
 		widgets = append(widgets, func(gtx layout.Context) layout.Dimensions {
 			return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
@@ -369,8 +375,9 @@ func (p *PageTransaction) Layout(gtx layout.Context, th *material.Theme) layout.
 }
 
 type RPCArgInfo struct {
-	arg    rpc.Argument
-	editor *widget.Editor
+	arg        rpc.Argument
+	editor     *widget.Editor
+	buttonCopy *components.Button
 }
 
 func NewRPCArgInfo(arg rpc.Argument) *RPCArgInfo {
@@ -378,13 +385,26 @@ func NewRPCArgInfo(arg rpc.Argument) *RPCArgInfo {
 	editor.ReadOnly = true
 	editor.SetText(fmt.Sprint(arg.Value))
 
+	copyIcon, _ := widget.NewIcon(icons.ContentContentCopy)
+	buttonCopy := components.NewButton(components.ButtonStyle{
+		Icon: copyIcon,
+	})
+
 	return &RPCArgInfo{
-		editor: editor,
-		arg:    arg,
+		editor:     editor,
+		arg:        arg,
+		buttonCopy: buttonCopy,
 	}
 }
 
 func (p *RPCArgInfo) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
+	if p.buttonCopy.Clicked() {
+		clipboard.WriteOp{
+			Text: p.editor.Text(),
+		}.Add(gtx.Ops)
+		notification_modals.InfoInstance.SetText(lang.Translate("Clipboard"), lang.Translate("Text copied to clipboard"))
+		notification_modals.InfoInstance.SetVisible(true, notification_modals.CLOSE_AFTER_DEFAULT)
+	}
 	var name string
 	switch p.arg.Name {
 	case "D":
@@ -407,19 +427,27 @@ func (p *RPCArgInfo) Layout(gtx layout.Context, th *material.Theme) layout.Dimen
 
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-			lbl := material.Label(th, unit.Sp(16), name)
-			lbl.Font.Weight = font.Bold
-			lbl.Color = theme.Current.TextMuteColor
-			return lbl.Layout(gtx)
+			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					lbl := material.Label(th, unit.Sp(18), lang.Translate(name))
+					lbl.Font.Weight = font.Bold
+					lbl.Color = theme.Current.TextMuteColor
+					return lbl.Layout(gtx)
+				}),
+				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+					gtx.Constraints.Max.X = gtx.Dp(20)
+					gtx.Constraints.Max.Y = gtx.Dp(20)
+					p.buttonCopy.Style.Colors = theme.Current.ModalButtonColors
+					return p.buttonCopy.Layout(gtx, th)
+				}),
+			)
 		}),
-		layout.Rigid(layout.Spacer{Height: unit.Dp(5)}.Layout),
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			editor := material.Editor(th, p.editor, "")
 			editor.Editor.WrapPolicy = text.WrapHeuristically
 			editor.Editor.SingleLine = 0 != 0
 			return editor.Layout(gtx)
-		},
-		),
+		}),
 	)
 }
 
