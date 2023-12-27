@@ -27,12 +27,14 @@ type Page struct {
 	pageMain    *PageMain
 	pageAppInfo *PageAppInfo
 	pageDero    *PageDero
+	pageRpc     *PageRpc
 }
 
 var (
 	PAGE_MAIN     = "page_main"
 	PAGE_APP_INFO = "page_app_info"
 	PAGE_DERO     = "page_dero"
+	PAGE_RPC      = "page_rpc"
 )
 
 var page_instance *Page
@@ -59,6 +61,9 @@ func New() *Page {
 	pageDero := NewPageDero()
 	pageRouter.Add(PAGE_DERO, pageDero)
 
+	pageRpc := NewPageRpc()
+	pageRouter.Add(PAGE_RPC, pageRpc)
+
 	header := prefabs.NewHeader(pageRouter)
 
 	page := &Page{
@@ -68,6 +73,7 @@ func New() *Page {
 		pageRouter:     pageRouter,
 		pageMain:       pageMain,
 		pageDero:       pageDero,
+		pageRpc:        pageRpc,
 	}
 
 	page_instance = page

@@ -33,6 +33,7 @@ type PageMain struct {
 	themeSelector *prefabs.ThemeSelector
 	buttonInfo    *components.Button
 	buttonDERO    *components.Button
+	buttonRPC     *components.Button
 }
 
 var _ router.Page = &PageMain{}
@@ -83,6 +84,21 @@ func NewPageFront() *PageMain {
 	buttonDERO.Label.Alignment = text.Middle
 	buttonDERO.Style.Font.Weight = font.Bold
 
+	buttonRPC := components.NewButton(components.ButtonStyle{
+		Icon:      infoIcon,
+		TextSize:  unit.Sp(16),
+		IconGap:   unit.Dp(10),
+		Inset:     layout.UniformInset(unit.Dp(10)),
+		Animation: components.NewButtonAnimationDefault(),
+		Border: widget.Border{
+			Color:        color.NRGBA{R: 0, G: 0, B: 0, A: 255},
+			Width:        unit.Dp(2),
+			CornerRadius: unit.Dp(5),
+		},
+	})
+	buttonRPC.Label.Alignment = text.Middle
+	buttonRPC.Style.Font.Weight = font.Bold
+
 	list := new(widget.List)
 	list.Axis = layout.Vertical
 
@@ -95,6 +111,7 @@ func NewPageFront() *PageMain {
 		themeSelector: themeSelector,
 		buttonInfo:    buttonInfo,
 		buttonDERO:    buttonDERO,
+		buttonRPC:     buttonRPC,
 	}
 }
 
@@ -149,6 +166,11 @@ func (p *PageMain) Layout(gtx layout.Context, th *material.Theme) layout.Dimensi
 		page_instance.header.AddHistory(PAGE_DERO)
 	}
 
+	if p.buttonRPC.Clicked() {
+		page_instance.pageRouter.SetCurrent(PAGE_RPC)
+		page_instance.header.AddHistory(PAGE_RPC)
+	}
+
 	if p.langSelector.Changed {
 		settings.App.Language = p.langSelector.Key
 		err := settings.Save()
@@ -185,6 +207,12 @@ func (p *PageMain) Layout(gtx layout.Context, th *material.Theme) layout.Dimensi
 			p.buttonInfo.Text = lang.Translate("App Info")
 			p.buttonInfo.Style.Colors = theme.Current.ButtonSecondaryColors
 			return p.buttonInfo.Layout(gtx, th)
+		},
+
+		func(gtx layout.Context) layout.Dimensions {
+			p.buttonRPC.Text = lang.Translate("Wallet RPC")
+			p.buttonRPC.Style.Colors = theme.Current.ButtonSecondaryColors
+			return p.buttonRPC.Layout(gtx, th)
 		},
 
 		func(gtx layout.Context) layout.Dimensions {
