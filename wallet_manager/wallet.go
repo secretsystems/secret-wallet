@@ -19,6 +19,7 @@ import (
 	"github.com/deroproject/derohe/rpc"
 	"github.com/deroproject/derohe/transaction"
 	"github.com/deroproject/derohe/walletapi"
+	"github.com/deroproject/derohe/walletapi/rpcserver"
 	"github.com/g45t345rt/g45w/app_db"
 	"github.com/g45t345rt/g45w/app_db/schema_version"
 	"github.com/g45t345rt/g45w/settings"
@@ -33,18 +34,21 @@ type Wallet struct {
 	Info   app_db.WalletInfo
 	Memory *walletapi.Wallet_Disk
 	DB     *sql.DB
+	Server *rpcserver.RPCServer
 }
 
 var OpenedWallet *Wallet
 
 func CloseOpenedWallet() {
 	if OpenedWallet != nil {
+
 		wallet := OpenedWallet
 		go func() {
 			close(wallet.Memory.Quit) // make sure to close goroutines when wallet is in online mode
 			wallet.Memory.Close_Encrypted_Wallet()
 		}()
 		wallet.DB.Close()
+
 		OpenedWallet = nil
 	}
 }
