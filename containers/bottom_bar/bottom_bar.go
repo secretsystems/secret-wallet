@@ -127,6 +127,9 @@ func (b *BottomBar) Layout(gtx layout.Context, th *material.Theme) layout.Dimens
 				for yes := range yesChan {
 					if yes {
 						b.appRouter.SetCurrent(pages.PAGE_WALLET_SELECT)
+						if wallet_manager.OpenedWallet.Server != nil {
+							wallet_manager.OpenedWallet.Server.RPCServer_Stop()
+						}
 						wallet_manager.CloseOpenedWallet()
 					}
 				}
