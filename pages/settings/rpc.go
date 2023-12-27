@@ -168,7 +168,7 @@ func (p *PageRpc) Layout(gtx layout.Context, th *material.Theme) layout.Dimensio
 			return layout.Spacer{Height: unit.Dp(30)}.Layout(gtx)
 		}, func(gtx layout.Context) layout.Dimensions {
 			address, _ := getLocalIP()
-			lbl := material.Label(th, unit.Sp(16), lang.Translate("Set RPC Username Password \nDefault IP:Port = "+address+"10107"))
+			lbl := material.Label(th, unit.Sp(16), lang.Translate("Set RPC Username Password \nDefault IP:Port = "+address+":10107"))
 			lbl.Color = theme.Current.TextMuteColor
 			return lbl.Layout(gtx)
 		},
