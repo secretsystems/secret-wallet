@@ -12,7 +12,7 @@ The goal is to bring more users into the Dero Ecosystem with a wallet that is in
 One notable technological difference is that this wallet uses Gio UI instead of Fyne for rendering components.
 
 ## Features
-
+- DERO integrated address support
 - Connect to a remote node for quick utilization.
 - Multiple wallet management.
 - Manage Dero and DERO tokens
@@ -31,6 +31,12 @@ One notable technological difference is that this wallet uses Gio UI instead of 
 ## Releases
 
 You can build your own version by following build steps bellow or use available prebuilds here.
+
+*be mindful when you install new copy of app on android...*
+> - you have to uninstall first 
+> - then re-install app 
+> - this will delete your wallet file
+> - you will have to restore from seed
 
 ## How to build
 
@@ -53,14 +59,6 @@ go install gioui.org/cmd/gogio@latest
 
 
 ### Android
-
-*be mindful*
-> - when you install new copy of app on android...
-> - you have to uninstall first 
-> - then re-install app 
-> - this will delete your wallet file
-> - you will have to restore from seed
-
 Install Android SDK with NDK bundle!
 
 Build the app.
