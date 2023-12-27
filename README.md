@@ -54,6 +54,13 @@ go install gioui.org/cmd/gogio@latest
 
 ### Android
 
+*be mindful*
+> when you install new copy of app on android...
+> you have to uninstall first 
+> then re-install app 
+> this will delete your wallet file
+> you will have to restore from seed
+
 Install Android SDK with NDK bundle!
 
 Build the app.
