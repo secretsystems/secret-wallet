@@ -20,6 +20,7 @@ import (
 	"github.com/secretsystems/secret-wallet/prefabs"
 	"github.com/secretsystems/secret-wallet/router"
 	"github.com/secretsystems/secret-wallet/theme"
+	"github.com/secretsystems/secret-wallet/utils"
 	"github.com/secretsystems/secret-wallet/wallet_manager"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
@@ -47,10 +48,9 @@ type RpcServer struct {
 }
 
 func NewRPCServer() *RpcServer {
-
-	addIcon, _ := widget.NewIcon(icons.ContentAdd)
 	loadingIcon, _ := widget.NewIcon(icons.NavigationRefresh)
 
+	addIcon, _ := widget.NewIcon(icons.ActionPermScanWiFi)
 	buttonOn := components.NewButton(components.ButtonStyle{
 		Rounded:     components.UniformRounded(unit.Dp(5)),
 		Icon:        addIcon,
@@ -63,6 +63,7 @@ func NewRPCServer() *RpcServer {
 	buttonOn.Label.Alignment = text.Middle
 	buttonOn.Style.Font.Weight = font.Bold
 
+	addIcon, _ = widget.NewIcon(icons.ContentClear)
 	buttonOff := components.NewButton(components.ButtonStyle{
 		Rounded:     components.UniformRounded(unit.Dp(5)),
 		Icon:        addIcon,
@@ -120,7 +121,7 @@ func (p *PageRpc) IsActive() bool {
 
 func (p *PageRpc) Enter() {
 	p.isActive = true
-	page_instance.header.Title = func() string { return lang.Translate("About RPC") }
+	page_instance.header.Title = func() string { return lang.Translate("RPC Settings") }
 
 	if !page_instance.header.IsHistory(PAGE_APP_INFO) {
 		p.animationEnter.Start()
@@ -165,11 +166,17 @@ func (p *PageRpc) Layout(gtx layout.Context, th *material.Theme) layout.Dimensio
 	widgets = append(
 		widgets,
 		func(gtx layout.Context) layout.Dimensions {
-			return layout.Spacer{Height: unit.Dp(30)}.Layout(gtx)
-		}, func(gtx layout.Context) layout.Dimensions {
-			address, _ := getLocalIP()
-			lbl := material.Label(th, unit.Sp(16), lang.Translate("Set RPC Username Password \nDefault IP:Port = "+address+":10107"))
-			lbl.Color = theme.Current.TextMuteColor
+			message := "To use an RPC bridge, you will need IP:Port\n"
+			message += "\nOn Mobile, you will have to find your IP address manually.\n"
+			message += "\nLook under Settings >> Network/Internet >> Wifi >> Find your local IP address:\n ex. 192.168.12.109\n"
+			message += "\nPort is set to be 10107 and so with the RPC bridge, you would use IP:Port like this:\n192.168.12.109:10107\n"
+			message += "\nSet RPC Username Password\n"
+			if utils.IsMobile() == false {
+				address, _ := getLocalIP()
+				message = "This Wallet's default IP:Port for RPC:\n " + address + ":10107\n"
+				message += "\nPlease set RPC Username Password\n"
+			}
+			lbl := material.Label(th, unit.Sp(16), lang.Translate(message))
 			return lbl.Layout(gtx)
 		},
 		func(gtx layout.Context) layout.Dimensions {

@@ -69,6 +69,8 @@ func NewPageFront() *PageMain {
 	buttonInfo.Label.Alignment = text.Middle
 	buttonInfo.Style.Font.Weight = font.Bold
 
+	infoIcon, _ = widget.NewIcon(icons.ActionOpenInBrowser)
+
 	buttonDERO := components.NewButton(components.ButtonStyle{
 		Icon:      infoIcon,
 		TextSize:  unit.Sp(16),
@@ -83,6 +85,7 @@ func NewPageFront() *PageMain {
 	})
 	buttonDERO.Label.Alignment = text.Middle
 	buttonDERO.Style.Font.Weight = font.Bold
+	infoIcon, _ = widget.NewIcon(icons.ActionHTTPS)
 
 	buttonRPC := components.NewButton(components.ButtonStyle{
 		Icon:      infoIcon,
@@ -199,6 +202,17 @@ func (p *PageMain) Layout(gtx layout.Context, th *material.Theme) layout.Dimensi
 
 	widgets := []layout.Widget{
 		func(gtx layout.Context) layout.Dimensions {
+			return p.langSelector.Layout(gtx, th)
+		},
+		func(gtx layout.Context) layout.Dimensions {
+			return p.themeSelector.Layout(gtx, th)
+		},
+		func(gtx layout.Context) layout.Dimensions {
+			p.buttonRPC.Text = lang.Translate("RPC Settings")
+			p.buttonRPC.Style.Colors = theme.Current.ButtonSecondaryColors
+			return p.buttonRPC.Layout(gtx, th)
+		},
+		func(gtx layout.Context) layout.Dimensions {
 			p.buttonDERO.Text = lang.Translate("About DERO")
 			p.buttonDERO.Style.Colors = theme.Current.ButtonSecondaryColors
 			return p.buttonDERO.Layout(gtx, th)
@@ -207,19 +221,6 @@ func (p *PageMain) Layout(gtx layout.Context, th *material.Theme) layout.Dimensi
 			p.buttonInfo.Text = lang.Translate("App Info")
 			p.buttonInfo.Style.Colors = theme.Current.ButtonSecondaryColors
 			return p.buttonInfo.Layout(gtx, th)
-		},
-
-		func(gtx layout.Context) layout.Dimensions {
-			p.buttonRPC.Text = lang.Translate("Wallet RPC")
-			p.buttonRPC.Style.Colors = theme.Current.ButtonSecondaryColors
-			return p.buttonRPC.Layout(gtx, th)
-		},
-
-		func(gtx layout.Context) layout.Dimensions {
-			return p.langSelector.Layout(gtx, th)
-		},
-		func(gtx layout.Context) layout.Dimensions {
-			return p.themeSelector.Layout(gtx, th)
 		},
 	}
 
