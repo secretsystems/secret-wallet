@@ -20,10 +20,10 @@ import (
 	"github.com/deroproject/derohe/transaction"
 	"github.com/deroproject/derohe/walletapi"
 	"github.com/deroproject/derohe/walletapi/rpcserver"
-	"github.com/g45t345rt/g45w/app_db"
-	"github.com/g45t345rt/g45w/app_db/schema_version"
-	"github.com/g45t345rt/g45w/settings"
-	"github.com/g45t345rt/g45w/utils"
+	"github.com/secretsystems/secret-wallet/app_db"
+	"github.com/secretsystems/secret-wallet/app_db/schema_version"
+	"github.com/secretsystems/secret-wallet/settings"
+	"github.com/secretsystems/secret-wallet/utils"
 
 	"database/sql"
 

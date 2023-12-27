@@ -4,7 +4,7 @@ replace gioui.org => github.com/g45t345rt/gio v0.0.0-20230904133952-efeff66801c5
 
 replace gioui.org/x => github.com/g45t345rt/gio-x v0.0.0-20230919164904-d758e00e2b78
 
-module github.com/g45t345rt/g45w
+module github.com/secretsystems/secret-wallet
 
 go 1.19
 

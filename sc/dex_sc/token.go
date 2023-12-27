@@ -1,6 +1,6 @@
 package dex_sc
 
-import "github.com/g45t345rt/g45w/utils"
+import "github.com/secretsystems/secret-wallet/utils"
 
 var DEX_SC_SHA256 = "51f330aeb991da9c845b77daf45304acf6e07a0e87125b8c0b8884dadbbd9dba"
 

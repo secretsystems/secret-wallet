@@ -8,9 +8,9 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/deroproject/derohe/globals"
-	"github.com/g45t345rt/g45w/app_db/order_column"
-	"github.com/g45t345rt/g45w/app_db/schema_version"
-	"github.com/g45t345rt/g45w/settings"
+	"github.com/secretsystems/secret-wallet/app_db/order_column"
+	"github.com/secretsystems/secret-wallet/app_db/schema_version"
+	"github.com/secretsystems/secret-wallet/settings"
 )
 
 type WalletInfo struct {

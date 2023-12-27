@@ -13,14 +13,14 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"github.com/g45t345rt/g45w/app_instance"
+	"github.com/secretsystems/secret-wallet/app_instance"
 
-	"github.com/g45t345rt/g45w/lang"
-	"github.com/g45t345rt/g45w/node_manager"
-	"github.com/g45t345rt/g45w/pages"
-	page_node "github.com/g45t345rt/g45w/pages/node"
-	"github.com/g45t345rt/g45w/theme"
-	"github.com/g45t345rt/g45w/wallet_manager"
+	"github.com/secretsystems/secret-wallet/lang"
+	"github.com/secretsystems/secret-wallet/node_manager"
+	"github.com/secretsystems/secret-wallet/pages"
+	page_node "github.com/secretsystems/secret-wallet/pages/node"
+	"github.com/secretsystems/secret-wallet/theme"
+	"github.com/secretsystems/secret-wallet/wallet_manager"
 )
 
 type NodeStatusBar struct {

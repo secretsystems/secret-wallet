@@ -1,7 +1,7 @@
 package dex_sc
 
 import (
-	"github.com/g45t345rt/g45w/utils"
+	"github.com/secretsystems/secret-wallet/utils"
 )
 
 type Pair struct {

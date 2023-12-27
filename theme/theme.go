@@ -4,8 +4,8 @@ import (
 	"image/color"
 
 	"gioui.org/op/paint"
-	"github.com/g45t345rt/g45w/assets"
-	"github.com/g45t345rt/g45w/components"
+	"github.com/secretsystems/secret-wallet/assets"
+	"github.com/secretsystems/secret-wallet/components"
 )
 
 type Theme struct {

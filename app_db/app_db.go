@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/g45t345rt/g45w/app_db/schema_version"
-	"github.com/g45t345rt/g45w/settings"
+	"github.com/secretsystems/secret-wallet/app_db/schema_version"
+	"github.com/secretsystems/secret-wallet/settings"
 )
 
 var DB *sql.DB

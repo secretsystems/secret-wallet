@@ -3,7 +3,7 @@ package theme
 import (
 	"image/color"
 
-	"github.com/g45t345rt/g45w/components"
+	"github.com/secretsystems/secret-wallet/components"
 )
 
 var Blue = &Theme{

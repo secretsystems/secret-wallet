@@ -13,13 +13,13 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget/material"
 	"gioui.org/x/camera"
-	"github.com/g45t345rt/g45w/app_instance"
-	"github.com/g45t345rt/g45w/components"
-	"github.com/g45t345rt/g45w/lang"
-	"github.com/g45t345rt/g45w/router"
-	"github.com/g45t345rt/g45w/theme"
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/qrcode"
+	"github.com/secretsystems/secret-wallet/app_instance"
+	"github.com/secretsystems/secret-wallet/components"
+	"github.com/secretsystems/secret-wallet/lang"
+	"github.com/secretsystems/secret-wallet/router"
+	"github.com/secretsystems/secret-wallet/theme"
 )
 
 type CameraQRScanModal struct {

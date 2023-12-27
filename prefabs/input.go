@@ -7,10 +7,10 @@ import (
 	"gioui.org/layout"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"github.com/g45t345rt/g45w/app_instance"
-	"github.com/g45t345rt/g45w/components"
-	"github.com/g45t345rt/g45w/containers/listselect_modal"
-	"github.com/g45t345rt/g45w/lang"
+	"github.com/secretsystems/secret-wallet/app_instance"
+	"github.com/secretsystems/secret-wallet/components"
+	"github.com/secretsystems/secret-wallet/containers/listselect_modal"
+	"github.com/secretsystems/secret-wallet/lang"
 	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 

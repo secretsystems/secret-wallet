@@ -4,8 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/g45t345rt/g45w/sc/dex_sc"
-	"github.com/g45t345rt/g45w/sc/g45_sc"
+	"github.com/secretsystems/secret-wallet/sc/dex_sc"
+	"github.com/secretsystems/secret-wallet/sc/g45_sc"
 )
 
 type SCType string

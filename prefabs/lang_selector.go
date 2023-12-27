@@ -10,11 +10,11 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"github.com/g45t345rt/g45w/assets"
-	"github.com/g45t345rt/g45w/components"
-	"github.com/g45t345rt/g45w/containers/listselect_modal"
-	"github.com/g45t345rt/g45w/lang"
-	"github.com/g45t345rt/g45w/theme"
+	"github.com/secretsystems/secret-wallet/assets"
+	"github.com/secretsystems/secret-wallet/components"
+	"github.com/secretsystems/secret-wallet/containers/listselect_modal"
+	"github.com/secretsystems/secret-wallet/lang"
+	"github.com/secretsystems/secret-wallet/theme"
 	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 

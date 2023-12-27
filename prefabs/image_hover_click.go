@@ -6,8 +6,8 @@ import (
 	"gioui.org/layout"
 	"gioui.org/unit"
 	"gioui.org/widget"
-	"github.com/g45t345rt/g45w/animation"
-	"github.com/g45t345rt/g45w/components"
+	"github.com/secretsystems/secret-wallet/animation"
+	"github.com/secretsystems/secret-wallet/components"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
 )

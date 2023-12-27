@@ -4,8 +4,8 @@ import (
 	"database/sql"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/g45t345rt/g45w/app_db/order_column"
-	"github.com/g45t345rt/g45w/app_db/schema_version"
+	"github.com/secretsystems/secret-wallet/app_db/order_column"
+	"github.com/secretsystems/secret-wallet/app_db/schema_version"
 )
 
 type NodeConnection struct {

@@ -6,8 +6,8 @@ import (
 	"gioui.org/app"
 	"gioui.org/unit"
 	"gioui.org/x/explorer"
-	"github.com/g45t345rt/g45w/router"
-	"github.com/g45t345rt/g45w/settings"
+	"github.com/secretsystems/secret-wallet/router"
+	"github.com/secretsystems/secret-wallet/settings"
 )
 
 var Window *app.Window

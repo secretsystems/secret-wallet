@@ -3,7 +3,7 @@ package lang
 import (
 	"fmt"
 
-	"github.com/g45t345rt/g45w/assets"
+	"github.com/secretsystems/secret-wallet/assets"
 )
 
 type Lang struct {

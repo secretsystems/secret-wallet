@@ -2,9 +2,9 @@ package node_manager
 
 import (
 	"github.com/deroproject/derohe/walletapi"
-	"github.com/g45t345rt/g45w/app_db"
+	"github.com/secretsystems/secret-wallet/app_db"
 
-	"github.com/g45t345rt/g45w/settings"
+	"github.com/secretsystems/secret-wallet/settings"
 )
 
 var CurrentNode *app_db.NodeConnection

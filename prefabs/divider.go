@@ -5,7 +5,7 @@ import (
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
 	"gioui.org/unit"
-	"github.com/g45t345rt/g45w/theme"
+	"github.com/secretsystems/secret-wallet/theme"
 )
 
 func Divider(gtx layout.Context, height unit.Dp) layout.Dimensions {

@@ -6,7 +6,7 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"github.com/g45t345rt/g45w/theme"
+	"github.com/secretsystems/secret-wallet/theme"
 )
 
 type TextField struct {

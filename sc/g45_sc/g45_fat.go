@@ -3,7 +3,7 @@ package g45_sc
 import (
 	"regexp"
 
-	"github.com/g45t345rt/g45w/utils"
+	"github.com/secretsystems/secret-wallet/utils"
 )
 
 var G45_FAT_PRIVATE_SHA256 = "5576b2c8bf0d4a4a187b56328027a217461ad8cd7e12648dff76e94778fda308"

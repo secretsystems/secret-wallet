@@ -7,8 +7,8 @@ import (
 
 	"gioui.org/app"
 	sysTheme "gioui.org/x/pref/theme"
-	"github.com/g45t345rt/g45w/lang"
-	"github.com/g45t345rt/g45w/theme"
+	"github.com/secretsystems/secret-wallet/lang"
+	"github.com/secretsystems/secret-wallet/theme"
 )
 
 var (

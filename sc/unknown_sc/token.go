@@ -1,6 +1,6 @@
 package unknown_sc
 
-import "github.com/g45t345rt/g45w/utils"
+import "github.com/secretsystems/secret-wallet/utils"
 
 type Token struct {
 	SCID     string

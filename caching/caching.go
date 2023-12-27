@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/g45t345rt/g45w/settings"
+	"github.com/secretsystems/secret-wallet/settings"
 )
 
 func cachePath(relPath string, name string) (cachePath string) {
