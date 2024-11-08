@@ -250,12 +250,6 @@ func (p *PageEditNodeForm) submitForm(gtx layout.Context) {
 			return
 		}
 
-		_, err := walletapi.TestConnect(txtEndpoint.Text())
-		if err != nil {
-			setError(err)
-			return
-		}
-
 		node := app_db.NodeConnection{
 			ID:          p.nodeConn.ID,
 			Name:        txtName.Text(),
@@ -263,7 +257,7 @@ func (p *PageEditNodeForm) submitForm(gtx layout.Context) {
 			OrderNumber: p.nodeConn.OrderNumber,
 		}
 
-		err = app_db.UpdateNodeConnection(node)
+		err := app_db.UpdateNodeConnection(node)
 		if err != nil {
 			setError(err)
 			return

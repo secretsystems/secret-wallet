@@ -20,7 +20,6 @@ import (
 	"gioui.org/widget/material"
 	"github.com/deroproject/derohe/cryptography/crypto"
 	"github.com/deroproject/derohe/rpc"
-	"github.com/deroproject/derohe/walletapi"
 	"github.com/secretsystems/secret-wallet/animation"
 	"github.com/secretsystems/secret-wallet/app_instance"
 	"github.com/secretsystems/secret-wallet/components"
@@ -188,7 +187,7 @@ func (p *PageScanCollection) submitForm() (scId string, scType sc.SCType, result
 		return scId, sc.UNKNOWN_TYPE, nil, fmt.Errorf("scid is empty")
 	}
 
-	err = walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
+	err = wallet_manager.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
 		SCID:      scId,
 		Variables: true,
 		Code:      true,

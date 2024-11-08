@@ -18,7 +18,6 @@ import (
 
 	"github.com/deroproject/derohe/cryptography/crypto"
 	"github.com/deroproject/derohe/rpc"
-	"github.com/deroproject/derohe/walletapi"
 	"github.com/secretsystems/secret-wallet/app_db/schema_version"
 	"github.com/secretsystems/secret-wallet/assets"
 	"github.com/secretsystems/secret-wallet/caching"
@@ -276,7 +275,7 @@ func GetSC(scId string) (result rpc.GetSC_Result, cached bool, err error) {
 		return
 	}
 
-	err = walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
+	err = RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
 		SCID:      scId,
 		Variables: true,
 		Code:      true,

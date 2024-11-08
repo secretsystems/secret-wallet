@@ -111,7 +111,7 @@ func (p *PageTransaction) Enter() {
 		p.payloadList = append(p.payloadList, NewRPCArgInfo(arg))
 	}
 
-	scData, _ := json.MarshalIndent(p.entry.SCDATA, "", "  ")
+	scData, _ := json.MarshalIndent(p.entry.Payload_RPC, "", "  ")
 	p.scDataEditor.SetText(string(scData))
 
 	if p.entry.Incoming {
@@ -323,7 +323,7 @@ func (p *PageTransaction) Layout(gtx layout.Context, th *material.Theme) layout.
 		})
 	}
 
-	if len(p.entry.SCDATA) > 0 {
+	if len(p.entry.Payload_RPC) > 0 {
 		widgets = append(widgets, func(gtx layout.Context) layout.Dimensions {
 			var childs []layout.FlexChild
 

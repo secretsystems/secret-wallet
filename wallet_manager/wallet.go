@@ -382,7 +382,7 @@ func (w *Wallet) GetGasEstimate(transfers []rpc.Transfer, ringsize uint64, scArg
 	signer := w.Memory.GetAddress().String()
 
 	var result rpc.GasEstimate_Result
-	err := walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetGasEstimate", rpc.GasEstimate_Params{
+	err := RPC_Client.RPC.CallResult(context.Background(), "DERO.GetGasEstimate", rpc.GasEstimate_Params{
 		Transfers: transfers,
 		SC_RPC:    scArgs,
 		Ringsize:  ringsize,
@@ -599,7 +599,7 @@ func saveWalletData(wallet *walletapi.Wallet_Memory) error {
 func (w *Wallet) GetRandomAddresses(scId crypto.Hash) ([]string, error) {
 	var result rpc.GetRandomAddress_Result
 
-	err := walletapi.RPC_Client.Call("DERO.GetRandomAddress", rpc.GetRandomAddress_Params{
+	err := RPC_Client.Call("DERO.GetRandomAddress", rpc.GetRandomAddress_Params{
 		SCID: scId,
 	}, &result)
 	if err != nil {

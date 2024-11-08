@@ -10,7 +10,6 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"github.com/deroproject/derohe/walletapi"
 	"github.com/secretsystems/secret-wallet/animation"
 	"github.com/secretsystems/secret-wallet/app_db"
 	"github.com/secretsystems/secret-wallet/components"
@@ -184,13 +183,7 @@ func (p *PageAddNodeForm) submitForm(gtx layout.Context) {
 			return
 		}
 
-		_, err := walletapi.TestConnect(txtEndpoint.Text())
-		if err != nil {
-			setError(err)
-			return
-		}
-
-		err = app_db.InsertNodeConnection(app_db.NodeConnection{
+		err := app_db.InsertNodeConnection(app_db.NodeConnection{
 			Name:     txtName.Text(),
 			Endpoint: txtEndpoint.Text(),
 		})

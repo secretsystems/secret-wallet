@@ -183,7 +183,7 @@ func (p *PageServiceNames) Layout(gtx layout.Context, th *material.Theme) layout
 					return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
 						layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 							name := ""
-							for _, arg := range entry.SCDATA {
+							for _, arg := range entry.Payload_RPC {
 								if arg.Name == "name" {
 									value, ok := arg.Value.(string)
 									if ok {

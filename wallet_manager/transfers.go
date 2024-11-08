@@ -80,7 +80,7 @@ func filterEntries(allEntries []rpc.Entry, start, end int, entrySCID crypto.Hash
 
 		if params.SC_CALL != nil {
 			add = false
-			for _, arg := range e.SCDATA {
+			for _, arg := range e.Payload_RPC {
 				if params.SC_CALL.SCID.Valid && arg.Name == "SC_ID" {
 					scId, ok := arg.Value.(string)
 					if ok && scId == params.SC_CALL.SCID.String {

@@ -17,27 +17,27 @@ type KeyLayout struct {
 }
 
 type Router struct {
-	Pages   map[interface{}]Page // does not keep ordering with range (use drawOrder)
-	Current interface{}
+	Pages   map[any]Page // does not keep ordering with range (use drawOrder)
+	Current any
 
-	drawOrder     []interface{}
+	drawOrder     []any
 	keyLayouts    []KeyLayout
 	closeKeyboard bool
 }
 
 func NewRouter() *Router {
 	return &Router{
-		drawOrder: make([]interface{}, 0),
-		Pages:     make(map[interface{}]Page),
+		drawOrder: make([]any, 0),
+		Pages:     make(map[any]Page),
 	}
 }
 
-func (router *Router) Add(tag interface{}, page Page) {
+func (router *Router) Add(tag any, page Page) {
 	router.Pages[tag] = page
 	router.drawOrder = append(router.drawOrder, tag)
 }
 
-func (router *Router) SetCurrent(tag interface{}) {
+func (router *Router) SetCurrent(tag any) {
 	_, ok := router.Pages[tag]
 	if ok {
 		//if router.Current == tag {

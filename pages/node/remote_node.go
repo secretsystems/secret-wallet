@@ -16,7 +16,6 @@ import (
 	"gioui.org/widget"
 	"gioui.org/widget/material"
 	"github.com/deroproject/derohe/rpc"
-	"github.com/deroproject/derohe/walletapi"
 	"github.com/secretsystems/secret-wallet/animation"
 	"github.com/secretsystems/secret-wallet/app_instance"
 	"github.com/secretsystems/secret-wallet/components"
@@ -26,6 +25,7 @@ import (
 	"github.com/secretsystems/secret-wallet/router"
 	"github.com/secretsystems/secret-wallet/theme"
 	"github.com/secretsystems/secret-wallet/utils"
+	"github.com/secretsystems/secret-wallet/wallet_manager"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
 	"golang.org/x/exp/shiny/materialdesign/icons"
@@ -147,8 +147,8 @@ func (p *PageRemoteNode) Layout(gtx layout.Context, th *material.Theme) layout.D
 
 	if p.buttonDisconnect.Clicked() {
 		go func() {
-			walletapi.RPC_Client.RPC.Close()
-			walletapi.RPC_Client.WS.Close()
+			wallet_manager.RPC_Client.RPC.Close()
+			wallet_manager.RPC_Client.WS.Close()
 		}()
 	}
 
@@ -339,9 +339,9 @@ func (n *RemoteNodeInfo) Active() {
 }
 
 func (n *RemoteNodeInfo) Update() {
-	if walletapi.RPC_Client.RPC == nil {
+	if wallet_manager.RPC_Client.RPC == nil {
 		return
 	}
 
-	n.Err = walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetInfo", nil, &n.Result)
+	n.Err = wallet_manager.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetInfo", nil, &n.Result)
 }

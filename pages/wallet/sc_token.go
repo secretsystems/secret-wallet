@@ -19,7 +19,6 @@ import (
 	"gioui.org/widget"
 	"gioui.org/widget/material"
 	"github.com/deroproject/derohe/rpc"
-	"github.com/deroproject/derohe/walletapi"
 	"github.com/secretsystems/secret-wallet/animation"
 	"github.com/secretsystems/secret-wallet/app_icons"
 	"github.com/secretsystems/secret-wallet/components"
@@ -725,7 +724,7 @@ func (d *G45DisplayContainer) Load() {
 		d.ownerEditor.SetText("")
 
 		var result rpc.GetSC_Result
-		err := walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
+		err := wallet_manager.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
 			SCID:       d.token.SCID,
 			Code:       false,
 			Variables:  false,
@@ -751,7 +750,7 @@ func (d *G45DisplayContainer) Load() {
 		key := fmt.Sprintf("owner_%s", addr)
 
 		var result rpc.GetSC_Result
-		err := walletapi.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
+		err := wallet_manager.RPC_Client.RPC.CallResult(context.Background(), "DERO.GetSC", rpc.GetSC_Params{
 			SCID:       d.token.SCID,
 			Code:       false,
 			Variables:  false,
